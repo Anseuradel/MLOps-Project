@@ -1,0 +1,12 @@
+apiVersion: v1    # Kubernetes API version for Services
+kind: Service     # Type of resource we're creating
+metadata:         # Resource identification
+  name: ml-service  # Service name
+spec:              # Service specification
+  selector:        # Defines which pods to route traffic to
+    app: ml-service  # Must match pod labels
+  ports:           # Port configuration
+    - port: 8000        # Port exposed by the service
+      targetPort: 8000  # Port on the pods
+      protocol: TCP     # Network protocol
+  type: LoadBalancer   # Service type for external access
