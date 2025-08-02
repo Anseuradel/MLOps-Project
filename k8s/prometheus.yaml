@@ -1,0 +1,38 @@
+apiVersion: v1          # Kubernetes API version
+kind: ConfigMap        # Resource type for configuration
+metadata:              # Resource identification
+  name: prometheus-config  # ConfigMap name
+data:
+  prometheus.yml: |     # Prometheus configuration file
+    global:            # Global settings
+        scrape_interval: 15s  # How often to scrape metrics
+    scrape_configs:    # List of metrics sources
+      - job_name: 'ml-service'  # Name for this scrape job
+        static_configs:         # Static target configuration
+          - targets: ['ml-service:8000']  # Service to monitor
+---
+apiVersion: apps/v1    # Kubernetes API version for Deployments
+kind: Deployment       # Deploy Prometheus server
+metadata:
+  name: prometheus     # Deployment name
+spec:
+  selector:           # Pod selector
+    matchLabels:
+      app: prometheus
+  template:           # Pod template
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:     # Container configuration
+      - name: prometheus
+        image: prom/prometheus  # Official Prometheus image
+        ports:
+        - containerPort: 9090  # Prometheus web interface
+        volumeMounts:         # Mount configuration
+        - name: config
+          mountPath: /etc/prometheus
+      volumes:               # Volume definitions
+      - name: config        # Configuration volume
+        configMap:          # Use our ConfigMap
+          name: prometheus-config
