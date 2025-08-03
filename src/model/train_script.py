@@ -11,7 +11,16 @@ def load_sample_data():
     - Splits features and target variables
     - Returns preprocessed X (features) and y (target)
     """
-    # Data loading code here
+    data = {
+        'text': [
+            "This product is amazing!",
+            "Terrible experience, would not recommend",
+            "Pretty good service overall",
+            "Not worth the money at all",
+            "Absolutely love it, best purchase ever"
+        ],
+        'sentiment': [1, 0, 1, 0, 1]  # 1 for positive, 0 for negative
+    }
     pass
 
 def main():
@@ -23,15 +32,18 @@ def main():
     4. Evaluates model performance
     5. Saves the trained model
     """
-    # Get training data
-    X, y = load_sample_data()
+     # Load data
+    logger.info("Loading training data...")
+    df = load_sample_data()
     
     # Initialize and train model
     trainer = ModelTrainer()
-    trainer.train(X, y)
+    logger.info("Training model...")
+    trainer.train(df['text'], df['sentiment'])
     
-    # Save the trained model
+    # Save the model
     trainer.save_model()
+    logger.info("Model training completed and saved")
 
 if __name__ == "__main__":
     main()
