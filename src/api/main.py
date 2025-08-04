@@ -3,8 +3,6 @@ from pydantic import BaseModel
 import numpy as np
 from fastapi import FastAPI, Response
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
-from src.model.trainer import ModelTrainer
-import logging
 
 # Initialize FastAPI app with metadata
 app = FastAPI(title="ML Model Serving API")
@@ -52,8 +50,13 @@ async def predict(request: PredictionRequest):
     4. Returns prediction result
     """
     try:
+        model = ModelTrainer.load_model()
+        prediction = model.predict([request.text])
         prediction_counter.inc()  # Increment prediction counter
         # Add prediction logic here
-        return {"prediction": "result"}
+        return {
+                "prediction": prediction.to_list()[0],
+               "status"= "success"
+               }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
