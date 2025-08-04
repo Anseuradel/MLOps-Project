@@ -57,8 +57,8 @@ async def predict(request: PredictionRequest):
         prediction_counter.inc()  # Increment prediction counter
         # Add prediction logic here
         return {
-                "prediction": prediction.to_list()[0],
-               "status"= "success"
-               }
+            "prediction": prediction.tolist()[0],
+            "status": "success"
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
