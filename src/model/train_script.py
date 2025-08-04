@@ -23,7 +23,7 @@ def load_sample_data():
         ],
         'sentiment': [1, 0, 1, 0, 1]  # 1 for positive, 0 for negative
     }
-    pass
+    return pd.DataFrame(data)
 
 def main():
     """
