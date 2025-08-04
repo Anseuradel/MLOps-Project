@@ -3,6 +3,8 @@ from pydantic import BaseModel
 import numpy as np
 from fastapi import FastAPI, Response
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+from src.model.trainer import ModelTrainer
+import logging
 
 # Initialize FastAPI app with metadata
 app = FastAPI(title="ML Model Serving API")
