@@ -1,38 +1,49 @@
-apiVersion: v1          # Kubernetes API version
-kind: ConfigMap        # Resource type for configuration
-metadata:              # Resource identification
-  name: prometheus-config  # ConfigMap name
-data:
-  prometheus.yml: |     # Prometheus configuration file
-    global:            # Global settings
-        scrape_interval: 15s  # How often to scrape metrics
-    scrape_configs:    # List of metrics sources
-      - job_name: 'ml-service'  # Name for this scrape job
-        static_configs:         # Static target configuration
-          - targets: ['ml-service:8000']  # Service to monitor
----
-apiVersion: apps/v1    # Kubernetes API version for Deployments
-kind: Deployment       # Deploy Prometheus server
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: prometheus     # Deployment name
+  name: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+        scrape_interval: 15s
+    scrape_configs:
+      - job_name: 'ml-service'
+        static_configs:
+          - targets: ['ml-service:8000']
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
 spec:
-  selector:           # Pod selector
+  selector:
     matchLabels:
       app: prometheus
-  template:           # Pod template
+  template:
     metadata:
       labels:
         app: prometheus
     spec:
-      containers:     # Container configuration
+      containers:
       - name: prometheus
-        image: prom/prometheus  # Official Prometheus image
+        image: prom/prometheus
         ports:
-        - containerPort: 9090  # Prometheus web interface
-        volumeMounts:         # Mount configuration
+        - containerPort: 9090
+        volumeMounts:
         - name: config
           mountPath: /etc/prometheus
-      volumes:               # Volume definitions
-      - name: config        # Configuration volume
-        configMap:          # Use our ConfigMap
+      volumes:
+      - name: config
+        configMap:
           name: prometheus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  selector:
+    app: prometheus
+  ports:
+  - port: 9090
+  type: LoadBalancer
