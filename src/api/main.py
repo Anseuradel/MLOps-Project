@@ -5,9 +5,11 @@ from fastapi import FastAPI, Response
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 from src.model.trainer import ModelTrainer
 import logging
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # Initialize FastAPI app with metadata
 app = FastAPI(title="ML Model Serving API")
+Instrumentator().instrument(app).expose(app)
 
 # Prometheus metrics counter
 prediction_counter = Counter('model_predictions_total', 'Total number of predictions made')
