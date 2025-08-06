@@ -10,4 +10,4 @@ spec:
     - name: http
       port: 80       # External port to expose
       targetPort: 8000  # Must match your container's port
-  type: ClusterIP    # Or LoadBalancer for external access
+  type: LoadBalancer    
