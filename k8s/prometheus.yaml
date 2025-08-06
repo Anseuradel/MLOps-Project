@@ -5,17 +5,24 @@ metadata:
 data:
   prometheus.yml: |
     global:
-        scrape_interval: 15s
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
     scrape_configs:
       - job_name: 'ml-service'
+        metrics_path: '/metrics'  # Explicitly declare metrics endpoint
         static_configs:
-          - targets: ['ml-service:8000']
+          - targets: ['ml-service.default.svc.cluster.local:8000']  # Full DNS name
+            labels:
+              service: 'ml-service'
+              namespace: 'default'
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: prometheus
@@ -26,12 +33,16 @@ spec:
     spec:
       containers:
       - name: prometheus
-        image: prom/prometheus
+        image: prom/prometheus:v2.47.0  # Pinned version
         ports:
         - containerPort: 9090
         volumeMounts:
         - name: config
           mountPath: /etc/prometheus
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
       volumes:
       - name: config
         configMap:
@@ -45,5 +56,7 @@ spec:
   selector:
     app: prometheus
   ports:
-  - port: 9090
+  - name: http
+    port: 9090
+    targetPort: 9090
   type: LoadBalancer
