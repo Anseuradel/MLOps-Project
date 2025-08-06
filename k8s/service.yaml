@@ -2,12 +2,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ml-service
-  namespace: default
 spec:
   selector:
-    app: ml-service  # Must match your deployment labels
+    app: ml-service
   ports:
-    - name: http
-      port: 80       # External port to expose
-      targetPort: 8000  # Must match your container's port
-  type: LoadBalancer    
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+  type: LoadBalancer 
