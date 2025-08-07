@@ -24,6 +24,10 @@ error_counter = Counter(
 
 model_load_error = Counter('model_load_errors_total', 'Total model loading failures')
 
+class ModelLoadError(Exception):
+    """Custom exception for model loading failures"""
+    pass
+
 
 class PredictionRequest(BaseModel):
     """
