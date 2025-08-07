@@ -8,6 +8,8 @@ import logging
 from prometheus_fastapi_instrumentator import Instrumentator
 from time import time
 from typing import Dict, Any
+from typing import Literal, Optional
+from datetime import datetime
 
 # Initialize FastAPI app with metadata
 app = FastAPI(title="ML Model Serving API")
@@ -29,6 +31,27 @@ model_load_error = Counter('model_load_errors_total', 'Total model loading failu
 class ModelLoadError(Exception):
     """Custom exception for model loading failures"""
     pass
+
+
+class PredictionResponse(BaseModel):
+    """
+    Enhanced response model with:
+    - Prediction details
+    - Confidence scores
+    - Model metadata
+    - Processing timings
+    """
+    text: str
+    prediction: int
+    prediction_label: str
+    confidence: Optional[float] = None
+    probabilities: Optional[dict] = None
+    model_version: str
+    model_type: str
+    processing_time_ms: float
+    timestamp: datetime
+    status: Literal["success", "error"]
+    error_details: Optional[str] = None
 
 
 class PredictionRequest(BaseModel):
