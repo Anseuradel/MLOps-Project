@@ -1,36 +1,39 @@
-#!/bin/bash
+# launch_k8s.ps1
+Write-Host "Starting Minikube cluster..." -ForegroundColor Cyan
+minikube start --driver=docker --cpus=4 --memory=6g --disk-size=20g
 
-# Start Minikube with extra resources
-minikube start --driver=docker --cpus=4 --memory=8g --disk-size=20g
-eval $(minikube docker-env)
+# Set Docker environment
+Write-Host "Configuring Docker environment..." -ForegroundColor Cyan
+minikube docker-env | Invoke-Expression
 
-# Build and load Docker image
+# Build Docker image
+Write-Host "Building ML service image..." -ForegroundColor Cyan
 docker build -t ml-service:latest .
 
-# Apply all Kubernetes manifests
+# Deploy Kubernetes manifests
+Write-Host "Applying Kubernetes configurations..." -ForegroundColor Cyan
 kubectl apply -f k8s/
 
-# Wait for services
-echo "Waiting for services to become ready..."
-kubectl wait --for=condition=available deployment/ml-service --timeout=120s
-kubectl wait --for=condition=available deployment/prometheus --timeout=120s -n monitoring
-kubectl wait --for=condition=available deployment/grafana --timeout=120s -n monitoring
+# Wait for deployments
+Write-Host "Waiting for services to become ready..." -ForegroundColor Cyan
+kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
+kubectl wait --for=condition=available --timeout=300s deployment/prometheus -n monitoring
+kubectl wait --for=condition=available --timeout=300s deployment/grafana -n monitoring
 
-# Set up port forwarding
-kubectl port-forward svc/ml-service 8000:8000 &
-kubectl port-forward svc/prometheus 9090:9090 -n monitoring &
-kubectl port-forward svc/grafana 3000:3000 -n monitoring &
+# Start port forwarding
+Write-Host "Starting port forwarding..." -ForegroundColor Cyan
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "kubectl port-forward svc/ml-service 8000:8000 -n default"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "kubectl port-forward svc/prometheus 9090:9090 -n monitoring"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "kubectl port-forward svc/grafana 3000:3000 -n monitoring"
 
-# Display info
-echo -e "\n\033[1mAccess URLs:\033[0m"
-echo "ML Service: http://localhost:8000"
-echo "Prometheus: http://localhost:9090"
-echo "Grafana:    http://localhost:3000 (admin/admin)"
-echo "Minikube Dashboard: $(minikube service ml-service --url)"
+# Get service URLs
+Write-Host "`nService Endpoints:" -ForegroundColor Green
+Write-Host "ML Service: http://localhost:8000" -ForegroundColor Yellow
+Write-Host "Prometheus: http://localhost:9090" -ForegroundColor Yellow
+Write-Host "Grafana:    http://localhost:3000 (admin/admin)" -ForegroundColor Yellow
+Write-Host "Minikube Dashboard: $(minikube service ml-service --url -n default)" -ForegroundColor Yellow
 
-# Open Grafana
-xdg-open http://localhost:3000  # Linux
-# open http://localhost:3000    # Mac
-# start http://localhost:3000   # Windows
+# Open Grafana in browser
+Start-Process "http://localhost:3000"
 
-wait
+Write-Host "`nSetup complete. Keep these terminal windows open." -ForegroundColor Green
