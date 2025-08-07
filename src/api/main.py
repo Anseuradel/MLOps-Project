@@ -12,7 +12,16 @@ app = FastAPI(title="ML Model Serving API")
 Instrumentator().instrument(app).expose(app)
 
 # Prometheus metrics counter
-prediction_counter = Counter('model_predictions_total', 'Total number of predictions made')
+prediction_counter = Counter('model_predictions_total',
+                             'Total number of predictions made',
+                             ['error_type'])
+
+error_counter = Counter(
+    'http_errors_total',
+    'Total API errors',
+    ['status_code']
+)
+
 
 class PredictionRequest(BaseModel):
     """
@@ -47,20 +56,36 @@ async def metrics():
 @app.post("/predict")
 async def predict(request: PredictionRequest):
     """
-    Main prediction endpoint
-    1. Validates input using PredictionRequest model
-    2. Performs prediction using loaded model
-    3. Increments metrics counter
-    4. Returns prediction result
+    Enhanced prediction endpoint with:
+    - Success/error tracking
+    - Error classification
+    - Prometheus metrics
     """
     try:
+        # 1. Validate input (automatically handled by FastAPI)
+        # 2. Load model
         model = ModelTrainer.load_model()
+        
+        # 3. Make prediction
         prediction = model.predict([request.text])
-        prediction_counter.inc()  # Increment prediction counter
-        # Add prediction logic here
+        PREDICTION_COUNTER.inc()  # Increment on success
+        
         return {
             "prediction": prediction.tolist()[0],
             "status": "success"
         }
+
+    except ValueError as e:
+        # Handle input validation errors
+        ERROR_COUNTER.labels(error_type="input_validation").inc()
+        raise HTTPException(status_code=400, detail=str(e))
+        
+    except ModelLoadError as e:
+        # Handle model loading errors
+        ERROR_COUNTER.labels(error_type="model_load").inc()
+        raise HTTPException(status_code=503, detail="Service unavailable")
+        
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Catch-all for other errors
+        ERROR_COUNTER.labels(error_type="unexpected").inc()
+        raise HTTPException(status_code=500, detail="Internal server error")
