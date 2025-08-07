@@ -84,89 +84,97 @@ async def metrics():
         media_type=CONTENT_TYPE_LATEST
     )
 
-@app.post("/predict", response_model=PredictionResponse)
-async def predict(request: PredictionRequest):
-    """
-    Enhanced prediction endpoint with:
-    - Detailed response format
-    - Confidence scores
-    - Processing time tracking
-    - Model metadata
-    """
-    start_time = time()
-    try:
-        try:
-            model = ModelTrainer.load_model()
-        except Exception as e:
-            model_load_error.inc()
-            raise ModelLoadError(f"Model loading failed: {str(e)}")
+from fastapi import Request
 
-        # Process prediction
-        prediction = model.predict([request.text])
+@app.post("/predict")
+async def predict_debug(request: Request):
+    raw_body = await request.body()
+    print("Raw body received:", raw_body)
+    return {"received": raw_body.decode()}
+
+# @app.post("/predict", response_model=PredictionResponse)
+# async def predict(request: PredictionRequest):
+#     """
+#     Enhanced prediction endpoint with:
+#     - Detailed response format
+#     - Confidence scores
+#     - Processing time tracking
+#     - Model metadata
+#     """
+#     start_time = time()
+#     try:
+#         try:
+#             model = ModelTrainer.load_model()
+#         except Exception as e:
+#             model_load_error.inc()
+#             raise ModelLoadError(f"Model loading failed: {str(e)}")
+
+#         # Process prediction
+#         prediction = model.predict([request.text])
         
-        # Get additional prediction details if available
-        response_data = {
-            "text": request.text,
-            "prediction": prediction.tolist()[0],
-            "prediction_label": "positive" if prediction[0] == 1 else "negative",
-            "model_version": "1.0.0",
-            "model_type": "SentimentAnalysis",
-            "timestamp": datetime.utcnow(),
-            "status": "success",
-            "processing_time_ms": (time() - start_time) * 1000
-        }
+#         # Get additional prediction details if available
+#         response_data = {
+#             "text": request.text,
+#             "prediction": prediction.tolist()[0],
+#             "prediction_label": "positive" if prediction[0] == 1 else "negative",
+#             "model_version": "1.0.0",
+#             "model_type": "SentimentAnalysis",
+#             "timestamp": datetime.utcnow(),
+#             "status": "success",
+#             "processing_time_ms": (time() - start_time) * 1000
+#         }
 
-        # Add confidence scores if model supports predict_proba
-        if hasattr(model, "predict_proba"):
-            probabilities = model.predict_proba([request.text])[0]
-            response_data.update({
-                "confidence": float(np.max(probabilities)),
-                "probabilities": {
-                    "negative": float(probabilities[0]),
-                    "positive": float(probabilities[1])
-                }
-            })
+#         # Add confidence scores if model supports predict_proba
+#         if hasattr(model, "predict_proba"):
+#             probabilities = model.predict_proba([request.text])[0]
+#             response_data.update({
+#                 "confidence": float(np.max(probabilities)),
+#                 "probabilities": {
+#                     "negative": float(probabilities[0]),
+#                     "positive": float(probabilities[1])
+#                 }
+#             })
 
-        prediction_counter.inc()
-        return response_data
+#         prediction_counter.inc()
+#         return response_data
 
-    except ValueError as e:
-        error_counter.labels(error_type="input_validation").inc()
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "status": "error",
-                "error_details": str(e),
-                "text": request.text,
-                "timestamp": datetime.utcnow(),
-                "processing_time_ms": (time() - start_time) * 1000
-            }
-        )
+#     except ValueError as e:
+#         error_counter.labels(error_type="input_validation").inc()
+#         raise HTTPException(
+#             status_code=400,
+#             detail={
+#                 "status": "error",
+#                 "error_details": str(e),
+#                 "text": request.text,
+#                 "timestamp": datetime.utcnow(),
+#                 "processing_time_ms": (time() - start_time) * 1000
+#             }
+#         )
         
-    except ModelLoadError as e:
-        error_counter.labels(error_type="model_load").inc()
-        raise HTTPException(
-            status_code=503,
-            detail={
-                "status": "error",
-                "error_details": str(e),
-                "timestamp": datetime.utcnow(),
-                "processing_time_ms": (time() - start_time) * 1000
-            }
-        )
+#     except ModelLoadError as e:
+#         error_counter.labels(error_type="model_load").inc()
+#         raise HTTPException(
+#             status_code=503,
+#             detail={
+#                 "status": "error",
+#                 "error_details": str(e),
+#                 "timestamp": datetime.utcnow(),
+#                 "processing_time_ms": (time() - start_time) * 1000
+#             }
+#         )
         
-    except Exception as e:
-        error_counter.labels(error_type="unexpected").inc()
-        raise HTTPException(
-            status_code=500,
-            detail={
-                "status": "error",
-                "error_details": "Internal server error",
-                "timestamp": datetime.utcnow(),
-                "processing_time_ms": (time() - start_time) * 1000
-            }
-        )
-    except Exception as e:
-        # Catch-all for other errors
-        error_counter.labels(error_type="unexpected").inc()
-        raise HTTPException(status_code=500, detail="Internal server error")
+#     except Exception as e:
+#         error_counter.labels(error_type="unexpected").inc()
+#         raise HTTPException(
+#             status_code=500,
+#             detail={
+#                 "status": "error",
+#                 "error_details": "Internal server error",
+#                 "timestamp": datetime.utcnow(),
+#                 "processing_time_ms": (time() - start_time) * 1000
+#             }
+#         )
+#     except Exception as e:
+#         # Catch-all for other errors
+#         error_counter.labels(error_type="unexpected").inc()
+#         raise HTTPException(status_code=500, detail="Internal server error")
