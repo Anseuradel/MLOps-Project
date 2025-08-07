@@ -5,29 +5,32 @@ services:
     build: .
     ports:
       - "8001:8000"
-    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+    environment:
+      - PORT=8000
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port $PORT
     depends_on:
-      - minikube
-
-  minikube:
-    image: minikube
-    command: start
+      - prometheus
+      - grafana
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ./src:/app/src  # For live code reload
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./k8s/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:latest
     ports:
       - "3000:3000"
     volumes:
       - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
 
