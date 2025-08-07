@@ -1,10 +1,20 @@
-numpy==1.22.4        # Maintains numerical operations (first stable 3.10-compatible version)
-pandas==1.4.4        # Data manipulation (works with numpy 1.22+)
-scikit-learn==1.1.2  # ML algorithms (current LTS version)
-nltk==3.7            # NLP tasks
-fastapi==0.79.0      # API framework
-uvicorn==0.18.3      # ASGI server
-pydantic==1.10.2     # Data validation
-prometheus-client==0.14.1  # Monitoring
-python-jose==3.3.0   # JWT (kept same as still compatible)
-python-multipart==0.0.6   # Form data
+# Core ML/NLP
+numpy==1.26.4          # Current stable (faster, better memory management)
+pandas==2.1.4          # Modern version with better performance
+scikit-learn==1.3.2     # Current stable (with many optimizations)
+nltk==3.8.1            # Updated NLP toolkit
+
+# FastAPI Stack
+fastapi==0.109.1        # Modern FastAPI version
+uvicorn==0.27.0         # Matching ASGI server
+pydantic==2.6.1         # Major upgrade (faster validation)
+python-jose==3.3.0      # Kept same (still compatible)
+python-multipart==0.0.9  # Updated form handling
+
+# Monitoring
+prometheus-client==0.19.0  # Updated metrics library
+
+# Additional recommended for ML serving:
+joblib==1.3.2          # Better model serialization
+typing-extensions==4.9.0  # Better type hints support
+anyio==4.2.0           # Improved async compatibility
