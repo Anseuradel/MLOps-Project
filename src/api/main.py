@@ -68,7 +68,7 @@ async def predict(request: PredictionRequest):
         
         # 3. Make prediction
         prediction = model.predict([request.text])
-        PREDICTION_COUNTER.inc()  # Increment on success
+        prediction_counter.inc()  # Increment on success
         
         return {
             "prediction": prediction.tolist()[0],
@@ -77,15 +77,15 @@ async def predict(request: PredictionRequest):
 
     except ValueError as e:
         # Handle input validation errors
-        ERROR_COUNTER.labels(error_type="input_validation").inc()
+        error_counter.labels(error_type="input_validation").inc()
         raise HTTPException(status_code=400, detail=str(e))
         
     except ModelLoadError as e:
         # Handle model loading errors
-        ERROR_COUNTER.labels(error_type="model_load").inc()
+        error_counter.labels(error_type="model_load").inc()
         raise HTTPException(status_code=503, detail="Service unavailable")
         
     except Exception as e:
         # Catch-all for other errors
-        ERROR_COUNTER.labels(error_type="unexpected").inc()
+        error_counter.labels(error_type="unexpected").inc()
         raise HTTPException(status_code=500, detail="Internal server error")
