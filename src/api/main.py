@@ -86,28 +86,15 @@ async def metrics():
 
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(request: PredictionRequest):
-    """
-    Enhanced prediction endpoint with:
-    - Detailed response format
-    - Confidence scores
-    - Processing time tracking
-    - Model metadata
-    """
     start_time = time()
     try:
-        try:
-            model = ModelTrainer.load_model()
-        except Exception as e:
-            model_load_error.inc()
-            raise ModelLoadError(f"Model loading failed: {str(e)}")
-
-        # Process prediction
+        model = ModelTrainer.load_model()
         prediction = model.predict([request.text])
         
-        # Prepare response data
+        # Create complete response
         response_data = {
             "text": request.text,
-            "prediction": int(prediction[0]),  # Convert numpy.int64 to native int
+            "prediction": int(prediction[0]),
             "prediction_label": "positive" if prediction[0] == 1 else "negative",
             "model_version": "1.0.0",
             "model_type": "SentimentAnalysis",
@@ -116,7 +103,6 @@ async def predict(request: PredictionRequest):
             "processing_time_ms": (time() - start_time) * 1000
         }
 
-        # Add confidence scores if model supports predict_proba
         if hasattr(model, "predict_proba"):
             probabilities = model.predict_proba([request.text])[0]
             response_data.update({
