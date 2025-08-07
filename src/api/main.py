@@ -54,12 +54,12 @@ class PredictionResponse(BaseModel):
     error_details: Optional[str] = None
 
 
-class PredictionRequest(BaseModel):
-    """
-    Pydantic model for request validation
-    Ensures that incoming requests contain the required 'text' field
-    """
-    text: str
+# class PredictionRequest(BaseModel):
+#     """
+#     Pydantic model for request validation
+#     Ensures that incoming requests contain the required 'text' field
+#     """
+#     text: str
 
 @app.get("/health")
 async def health_check():
