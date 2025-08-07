@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Body
 from pydantic import BaseModel
 import numpy as np
-from fastapi import FastAPI, Response
+from fastapi import Response
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 from src.model.trainer import ModelTrainer
 import logging
@@ -17,8 +17,8 @@ Instrumentator().instrument(app).expose(app)
 
 # Prometheus metrics counter
 prediction_counter = Counter('model_predictions_total',
-                             'Total number of predictions made',
-                             ['error_type'])
+                           'Total number of predictions made',
+                           ['error_type'])
 
 error_counter = Counter(
     'http_errors_total',
@@ -32,7 +32,15 @@ class ModelLoadError(Exception):
     """Custom exception for model loading failures"""
     pass
 
+# Input Model
+class PredictionRequest(BaseModel):
+    """
+    Pydantic model for request validation
+    Ensures that incoming requests contain the required 'text' field
+    """
+    text: str
 
+# Output Model
 class PredictionResponse(BaseModel):
     """
     Enhanced response model with:
@@ -52,14 +60,6 @@ class PredictionResponse(BaseModel):
     timestamp: datetime
     status: Literal["success", "error"]
     error_details: Optional[str] = None
-
-
-class PredictionRequest(BaseModel):
-    """
-    Pydantic model for request validation
-    Ensures that incoming requests contain the required 'text' field
-    """
-    text: str
 
 @app.get("/health")
 async def health_check():
@@ -84,14 +84,8 @@ async def metrics():
         media_type=CONTENT_TYPE_LATEST
     )
 
-
-from fastapi import Body
-
 @app.post("/predict", response_model=PredictionResponse)
-async def predict(text: str = Body(..., embed=True)):
-  
-# @app.post("/predict", response_model=PredictionResponse)
-# async def predict(request: PredictionRequest):
+async def predict(request: PredictionRequest):
     """
     Enhanced prediction endpoint with:
     - Detailed response format
@@ -110,10 +104,10 @@ async def predict(text: str = Body(..., embed=True)):
         # Process prediction
         prediction = model.predict([request.text])
         
-        # Get additional prediction details if available
+        # Prepare response data
         response_data = {
             "text": request.text,
-            "prediction": prediction.tolist()[0],
+            "prediction": int(prediction[0]),  # Convert numpy.int64 to native int
             "prediction_label": "positive" if prediction[0] == 1 else "negative",
             "model_version": "1.0.0",
             "model_type": "SentimentAnalysis",
@@ -137,7 +131,7 @@ async def predict(text: str = Body(..., embed=True)):
         return response_data
 
     except ValueError as e:
-        error_counter.labels(error_type="input_validation").inc()
+        error_counter.labels(status_code="400").inc()
         raise HTTPException(
             status_code=400,
             detail={
@@ -150,7 +144,7 @@ async def predict(text: str = Body(..., embed=True)):
         )
         
     except ModelLoadError as e:
-        error_counter.labels(error_type="model_load").inc()
+        error_counter.labels(status_code="503").inc()
         raise HTTPException(
             status_code=503,
             detail={
@@ -162,7 +156,7 @@ async def predict(text: str = Body(..., embed=True)):
         )
         
     except Exception as e:
-        error_counter.labels(error_type="unexpected").inc()
+        error_counter.labels(status_code="500").inc()
         raise HTTPException(
             status_code=500,
             detail={
@@ -172,7 +166,15 @@ async def predict(text: str = Body(..., embed=True)):
                 "processing_time_ms": (time() - start_time) * 1000
             }
         )
-    except Exception as e:
-        # Catch-all for other errors
-        error_counter.labels(error_type="unexpected").inc()
-        raise HTTPException(status_code=500, detail="Internal server error")
+
+# Debug endpoint (optional)
+@app.post("/predict_debug")
+async def predict_debug(request: Request):
+    """
+    Temporary endpoint to debug request format
+    """
+    raw_body = await request.body()
+    return {
+        "raw_body": raw_body.decode(),
+        "headers": dict(request.headers)
+    }
