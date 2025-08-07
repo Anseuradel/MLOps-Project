@@ -164,3 +164,20 @@ async def predict_debug(request: Request):
         "raw_body": raw_body.decode(),
         "headers": dict(request.headers)
     }
+
+# test response
+@app.post("/predict_test")
+async def predict_test(request: PredictionRequest):
+    """Test endpoint that returns all fields with sample data"""
+    return {
+        "text": request.text,
+        "prediction": 1,
+        "prediction_label": "positive",
+        "confidence": 0.95,
+        "probabilities": {"negative": 0.05, "positive": 0.95},
+        "model_version": "1.0.0",
+        "model_type": "SentimentAnalysis",
+        "processing_time_ms": 42.5,
+        "timestamp": datetime.utcnow(),
+        "status": "success"
+    }
