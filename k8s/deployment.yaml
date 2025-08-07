@@ -1,50 +1,45 @@
-apiVersion: apps/v1  # Kubernetes API version for Deployments
-kind: Deployment     # Type of resource we're creating
-metadata:           # Resource identification
-  name: ml-service  # Name of our deployment
-  labels:           # Labels for organizing Kubernetes resources
-    app: ml-service # Label to identify this application
-spec:               # Deployment specification
-  replicas: 3       # Number of pod replicas to maintain
-  selector:         # Defines how the deployment finds pods to manage
-    matchLabels:    # Must match the pod template labels
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
       app: ml-service
-  template:         # Template for creating pods
-    metadata:       # Pod metadata
-      labels:       # Labels applied to pods
+  template:
+    metadata:
+      labels:
         app: ml-service
-    spec:           # Pod specification
-      containers:   # List of containers in the pod
-      - name: ml-service           # Container name
-        image: abonia/ml-tutorial:latest  # Docker image to use
-        ports:                     # Container ports to expose
-        - containerPort: 8000      # Port our FastAPI app listens on
-        envFrom:                   # Environment variables from ConfigMap
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+      - name: ml-service
+        image: ml-service:latest
+        imagePullPolicy: Never  # Uses local Minikube image
+        ports:
+        - containerPort: 8000
+        envFrom:
         - configMapRef:
-            name: ml-service-config
-        volumeMounts:             # Mount points for volumes
-        - name: model-storage     # Volume name
-          mountPath: /models      # Where to mount in container
-        resources:               # Resource limits and requests
-          requests:             # Minimum resources needed
-            memory: "512Mi"     # 512 megabytes of memory
-            cpu: "500m"        # 500 millicpu (0.5 CPU core)
-          limits:              # Maximum resources allowed
-            memory: "1Gi"      # 1 gigabyte of memory
-            cpu: "1000m"      # 1000 millicpu (1 CPU core)
-        readinessProbe:       # Checks if pod is ready to serve traffic
-          httpGet:           # Use HTTP GET request
-            path: /health   # Health check endpoint
-            port: 8000     # Port to check
-          initialDelaySeconds: 5   # Wait before first check
-          periodSeconds: 10        # Time between checks
-        livenessProbe:           # Checks if pod is alive
+            name: ml-config
+        volumeMounts:
+        - name: model-storage
+          mountPath: /app/models
+        livenessProbe:
           httpGet:
             path: /health
             port: 8000
-          initialDelaySeconds: 15
-          periodSeconds: 20
-      volumes:                    # Volume definitions
-      - name: model-storage      # Name matches volumeMount
-        persistentVolumeClaim:   # Use persistent storage
-          claimName: model-storage  # Name of PVC
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-pvc
