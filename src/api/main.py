@@ -22,6 +22,8 @@ error_counter = Counter(
     ['status_code']
 )
 
+model_load_error = Counter('model_load_errors_total', 'Total model loading failures')
+
 
 class PredictionRequest(BaseModel):
     """
@@ -62,14 +64,16 @@ async def predict(request: PredictionRequest):
     - Prometheus metrics
     """
     try:
-        # 1. Validate input (automatically handled by FastAPI)
-        # 2. Load model
-        model = ModelTrainer.load_model()
-        
-        # 3. Make prediction
+        try:
+            model = ModelTrainer.load_model()
+        except Exception as e:
+            model_load_error.inc()
+            raise ModelLoadError(f"Model loading failed: {str(e)}")
+
+       # Process prediction
         prediction = model.predict([request.text])
-        prediction_counter.inc()  # Increment on success
-        
+        prediction_counter.inc()  # Only increment on full success
+      
         return {
             "prediction": prediction.tolist()[0],
             "status": "success"
