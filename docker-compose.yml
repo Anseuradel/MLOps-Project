@@ -1,18 +1,21 @@
 version: '3.8'
 
 services:
-  ml-api:
+  ml-service:
     build: .
     ports:
-      - "8001:8000"
+      - "8000:8000"
     environment:
       - PORT=8000
-    command: uvicorn src.api.main:app --host 0.0.0.0 --port $PORT
-    depends_on:
-      - prometheus
-      - grafana
+      - ENVIRONMENT=production
     volumes:
-      - ./src:/app/src  # For live code reload
+      - ./src:/app/src  # Live reload for development
+      - model-data:/app/models  # Persistent storage for models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   prometheus:
     image: prom/prometheus:latest
@@ -22,17 +25,23 @@ services:
       - ./k8s/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+    depends_on:
+      ml-service:
+        condition: service_healthy
 
   grafana:
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
-    volumes:
-      - grafana-storage:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./k8s/grafana-dashboards:/etc/grafana/provisioning/dashboards
     depends_on:
       - prometheus
 
 volumes:
-  grafana-storage:
+  model-data:
+  grafana-data:
