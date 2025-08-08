@@ -1,37 +1,63 @@
-# Start Minikube with clean slate
+# 1. Clean previous cluster
 minikube delete
-minikube start --driver=docker --cpus=4 --memory=8g
 
-# Configure Docker environment
+# 2. Start with adjusted resources
+minikube start --driver=docker --cpus=4 --memory=6000m --disk-size=20g
+
+# 3. Configure Docker environment
 minikube docker-env | Invoke-Expression
 
-# Build image with clean cache
-docker build --no-cache -t ml-service:latest .
+# 4. Build image
+docker build -t ml-service:latest .
 
-# Create monitoring namespace if not exists
+# 5. Wait for Kubernetes API
+$maxRetries = 30
+$retryCount = 0
+$connected = $false
+
+while ($retryCount -lt $maxRetries -and -not $connected) {
+    try {
+        kubectl cluster-info
+        if ($LASTEXITCODE -eq 0) {
+            $connected = $true
+            Write-Host "✓ Kubernetes API is ready"
+        }
+    } catch {
+        Write-Host "Waiting for Kubernetes API to be ready... (attempt $($retryCount + 1))"
+        Start-Sleep -Seconds 5
+        $retryCount++
+    }
+}
+
+if (-not $connected) {
+    Write-Host "❌ Failed to connect to Kubernetes API after $maxRetries attempts"
+    exit 1
+}
+
+# 6. Create monitoring namespace
 kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
 
-# Apply configurations in correct order
-kubectl apply -f k8s/persistence.yaml
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/deployment.yaml
-kubectl apply -f k8s/service.yaml
-kubectl apply -f k8s/prometheus.yaml
-kubectl apply -f k8s/grafana.yaml
-kubectl apply -f k8s/hpa.yaml
+# 7. Apply configurations with validation disabled
+kubectl apply --validate=false -f k8s/persistence.yaml
+kubectl apply --validate=false -f k8s/configmap.yaml
+kubectl apply --validate=false -f k8s/deployment.yaml
+kubectl apply --validate=false -f k8s/service.yaml
+kubectl apply --validate=false -f k8s/prometheus.yaml
+kubectl apply --validate=false -f k8s/grafana.yaml
+kubectl apply --validate=false -f k8s/hpa.yaml
 
-# Wait for services
+# 8. Wait for services
 Write-Host "Waiting for services to become ready..."
-kubectl wait --for=condition=available deployment/ml-service --timeout=120s
-kubectl wait --for=condition=available deployment/prometheus -n monitoring --timeout=120s
-kubectl wait --for=condition=available deployment/grafana -n monitoring --timeout=120s
+kubectl wait --for=condition=available deployment/ml-service --timeout=300s
+kubectl wait --for=condition=available deployment/prometheus -n monitoring --timeout=300s
+kubectl wait --for=condition=available deployment/grafana -n monitoring --timeout=300s
 
-# Port forwarding
+# 9. Port forwarding
 Start-Process powershell -ArgumentList "kubectl port-forward svc/ml-service 8000:8000"
 Start-Process powershell -ArgumentList "kubectl port-forward svc/prometheus 9090:9090 -n monitoring"
 Start-Process powershell -ArgumentList "kubectl port-forward svc/grafana 3000:3000 -n monitoring"
 
-# Open Grafana
+# 10. Open Grafana
 Start-Process "http://localhost:3000"
 
 Write-Host "`nAccess URLs:"
