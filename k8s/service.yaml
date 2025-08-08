@@ -10,3 +10,17 @@ spec:
     nodePort: 30080
   selector:
     app: ml-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: monitoring  # Changed from default
+spec:
+  type: NodePort  # Changed from LoadBalancer
+  ports:
+  - port: 9090
+    targetPort: 9090
+    nodePort: 30909  # Explicit port
+  selector:
+    app: prometheus
