@@ -22,7 +22,8 @@ while ($retryCount -lt $maxRetries -and -not $connected) {
             $connected = $true
             Write-Host "✓ Kubernetes API is ready"
         }
-    } catch {
+    }
+    catch {
         Write-Host "Waiting for Kubernetes API to be ready... (attempt $($retryCount + 1))"
         Start-Sleep -Seconds 5
         $retryCount++
