@@ -1,4 +1,4 @@
-# launch_k8s.ps1 - Improved version with proper sequencing and error handling
+# launch_k8s.ps1 - Updated version with deployment
 
 function Start-InNewWindow {
     param (
@@ -22,27 +22,24 @@ if (-not $?) {
     exit 1
 }
 
-# 2. Verify ml-service exists before proceeding
-Write-Host "Checking for ml-service in default namespace..."
-$serviceCheck = kubectl get svc ml-service -n default --output=name 2>&1
-if ($serviceCheck -like "*NotFound*") {
-    Write-Host "Error: ml-service not found in default namespace"
-    Write-Host "Available services:"
-    minikube service list
-    exit 1
-}
+# 2. Build and load Docker image
+Write-Host "Building and loading Docker image..."
+docker build -t ml-service .
+minikube image load ml-service:latest
 
-# 3. Get ML Service URL (must complete before other steps)
+# 3. Apply Kubernetes manifests
+Write-Host "Deploying Kubernetes resources..."
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+# Wait for deployment to be ready
+Write-Host "Waiting for deployment to be ready..."
+kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
+
+# 4. Now proceed with service discovery and port forwarding
 Write-Host "Getting ML Service URL..."
 $mlServiceUrl = minikube service ml-service --url -n default
-if (-not $?) {
-    Write-Host "Failed to get ML Service URL"
-    exit 1
-}
 Write-Host "ML Service available at: $mlServiceUrl"
-
-# 4. Launch other services only after ML Service is confirmed available
-Write-Host "Launching supporting services..."
 
 # Prometheus
 Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n default" -Title "Prometheus (9090)"
