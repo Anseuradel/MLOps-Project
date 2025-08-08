@@ -9,6 +9,11 @@ function Start-InNewWindow {
     Start-Process wt -ArgumentList @("-w", "0", "nt", "-d", (Get-Location).Path, "--title", $Title, $psCommand)
 }
 
+# 0. Clean up existing Minikube instance
+Write-Host "Cleaning up existing Minikube cluster..."
+minikube stop 2>&1 | Out-Null
+minikube delete 2>&1 | Out-Null
+
 # 1. Start Minikube cluster
 Write-Host "Starting Minikube cluster..."
 minikube start
