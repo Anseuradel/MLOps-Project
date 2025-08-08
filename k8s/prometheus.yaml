@@ -22,6 +22,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
+  namespace: monitoring  # Must match your namespace
 spec:
   replicas: 1
   selector:
@@ -34,18 +35,14 @@ spec:
     spec:
       containers:
       - name: prometheus
-        image: prom/prometheus:v2.47.0  # Pinned version
+        image: prom/prometheus:latest
         ports:
         - containerPort: 9090
         volumeMounts:
-        - name: config
+        - name: config-volume
           mountPath: /etc/prometheus
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
       volumes:
-      - name: config
+      - name: config-volume
         configMap:
           name: prometheus-config
 ---
