@@ -1,6 +1,5 @@
-# launch_k8s.ps1
+# launch_k8s.ps1 - Improved version with proper sequencing and error handling
 
-# Function to start a command in a new PowerShell terminal window
 function Start-InNewWindow {
     param (
         [string]$Command,
@@ -10,31 +9,55 @@ function Start-InNewWindow {
     Start-Process wt -ArgumentList @("-w", "0", "nt", "-d", (Get-Location).Path, "--title", $Title, $psCommand)
 }
 
-Write-Host "Starting Minikube cluster..."
+# 1. Start Minikube cluster
+Write-Host "🚀 Starting Minikube cluster..."
 minikube start
+if (-not $?) {
+    Write-Host "❌ Failed to start Minikube"
+    exit 1
+}
 
-Write-Host "Getting ML Service URL..."
-$mlServiceUrl = minikube service ml-service --url
-Write-Host "ML Service available at: $mlServiceUrl"
+# 2. Verify ml-service exists before proceeding
+Write-Host "🔍 Checking for ml-service in default namespace..."
+$serviceCheck = kubectl get svc ml-service -n default --output=name 2>&1
+if ($serviceCheck -like "*NotFound*") {
+    Write-Host "❌ Error: ml-service not found in default namespace"
+    Write-Host "Available services:"
+    minikube service list
+    exit 1
+}
 
-# Launch Prometheus in a new window
+# 3. Get ML Service URL (must complete before other steps)
+Write-Host "🔗 Getting ML Service URL..."
+$mlServiceUrl = minikube service ml-service --url -n default
+if (-not $?) {
+    Write-Host "❌ Failed to get ML Service URL"
+    exit 1
+}
+Write-Host "✅ ML Service available at: $mlServiceUrl"
+
+# 4. Launch other services only after ML Service is confirmed available
+Write-Host "🌐 Launching supporting services..."
+
+# Prometheus
 Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n default" -Title "Prometheus (9090)"
-Start-Sleep -Seconds 2  # Small delay between launches
+Start-Sleep -Seconds 2
 
-# Launch Grafana in a new window
+# Grafana
 Start-InNewWindow -Command "kubectl port-forward -n monitoring deployment/grafana 3000" -Title "Grafana (3000)"
 Start-Sleep -Seconds 2
 Start-Process "http://localhost:3000/login"
 
-# Launch ML Service port forwarding in a new window
+# ML Service port forwarding
 Start-InNewWindow -Command "kubectl port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service (8000)"
 Start-Sleep -Seconds 2
 
-# Launch FastAPI server in a new window
-Start-InNewWindow -Command "uvicorn src.api.main:app --reload --port 8001" -Title "FastAPI Server (8001)"
+# FastAPI server
+Start-InNewWindow -Command "uvicorn src.api.main:app --reload --port 8001" -Title "FastAPI (8001)"
 
-Write-Host "All services launched in separate terminal windows:"
+Write-Host "✅ All services launched successfully"
+Write-Host "📊 Monitoring:"
 Write-Host "- Prometheus: http://localhost:9090"
 Write-Host "- Grafana: http://localhost:3000 (admin/admin)"
 Write-Host "- ML Service: http://localhost:8000"
-Write-Host "- FastAPI Server: http://localhost:8001"
+Write-Host "- FastAPI: http://localhost:8001"
