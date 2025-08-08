@@ -10,7 +10,7 @@ docker build -t ml-service:latest .
 kubectl create namespace monitoring
 
 # 4. Apply configurations in order
-kubectl apply -f k8s/configmaps.yaml
+kubectl apply -f k8s/configmap.yaml
 kubectl apply -f k8s/persistence.yaml
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
