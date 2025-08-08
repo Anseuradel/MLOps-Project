@@ -61,7 +61,8 @@ Start-Process powershell -ArgumentList "kubectl port-forward svc/grafana 3000:30
 # 10. Open Grafana
 Start-Process "http://localhost:3000"
 
-Write-Host "`nAccess URLs:"
+Write-Host ""
+Write-Host "Access URLs:"
 Write-Host "ML Service: http://localhost:8000"
 Write-Host "Prometheus: http://localhost:9090"
 Write-Host "Grafana: http://localhost:3000 (admin/admin)"
