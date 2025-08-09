@@ -5,26 +5,17 @@ metadata:
 data:
   prometheus.yml: |
     global:
-      scrape_interval: 15s
-      evaluation_interval: 15s
-    
+        scrape_interval: 15s
     scrape_configs:
       - job_name: 'ml-service'
-        metrics_path: '/metrics'  # Explicit path
         static_configs:
-          - targets: ['ml-service.default.svc.cluster.local:8000']  # Full DNS
-        relabel_configs:
-          - source_labels: [__address__]
-            target_label: __metrics_path__
-            replacement: /metrics
+          - targets: ['ml-service:8000']
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
-  namespace: monitoring  # Must match your namespace
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: prometheus
@@ -35,14 +26,14 @@ spec:
     spec:
       containers:
       - name: prometheus
-        image: prom/prometheus:latest
+        image: prom/prometheus
         ports:
         - containerPort: 9090
         volumeMounts:
-        - name: config-volume
+        - name: config
           mountPath: /etc/prometheus
       volumes:
-      - name: config-volume
+      - name: config
         configMap:
           name: prometheus-config
 ---
@@ -54,7 +45,5 @@ spec:
   selector:
     app: prometheus
   ports:
-  - name: http
-    port: 9090
-    targetPort: 9090
+  - port: 9090
   type: LoadBalancer
