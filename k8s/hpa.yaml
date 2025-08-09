@@ -7,12 +7,12 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: ml-service
-  minReplicas: 2
-  maxReplicas: 5
+  minReplicas: 3
+  maxReplicas: 10
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 80
+        averageUtilization: 70
