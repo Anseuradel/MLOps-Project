@@ -29,8 +29,12 @@ minikube image load ml-service:latest
 
 # 3. Apply Kubernetes manifests
 Write-Host "Deploying Kubernetes resources..."
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
+kubectl apply -f k8s/persistence.yaml
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/hpa.yaml
+kubectl apply -f k8s/prometheus.yaml
 
 # Wait for deployment to be ready
 Write-Host "Waiting for deployment to be ready..."
