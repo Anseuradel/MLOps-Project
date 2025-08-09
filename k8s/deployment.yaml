@@ -2,9 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ml-service
-  namespace: default
+  labels:
+    app: ml-service
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: ml-service
@@ -12,35 +13,38 @@ spec:
     metadata:
       labels:
         app: ml-service
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8000"
     spec:
       containers:
       - name: ml-service
-        image: ml-service:latest
-        imagePullPolicy: Never  # Uses local Minikube image
+        image: abonia/ml-tutorial:latest
         ports:
         - containerPort: 8000
         envFrom:
         - configMapRef:
-            name: ml-config
+            name: ml-service-config
         volumeMounts:
         - name: model-storage
-          mountPath: /app/models
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
+          mountPath: /models
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
         readinessProbe:
           httpGet:
             path: /health
             port: 8000
           initialDelaySeconds: 5
-          periodSeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
       volumes:
       - name: model-storage
         persistentVolumeClaim:
-          claimName: model-pvc
+          claimName: model-storage
