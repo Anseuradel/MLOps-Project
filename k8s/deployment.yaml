@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ml-service
-        image: abonia/ml-tutorial:latest
+        image: adelanseur95/ml-service:v2
         ports:
         - containerPort: 8000
         envFrom:
