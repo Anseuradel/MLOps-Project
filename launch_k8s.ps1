@@ -23,7 +23,7 @@ kubectl apply -f k8s/configmap.yaml
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/hpa.yaml
-kubectl apply -f k8s/monitoring/prometheus.yaml
+kubectl apply -f k8s/prometheus.yaml
 
 # 2. Wait for deployment
 Write-Host "Waiting for services to become ready..."
