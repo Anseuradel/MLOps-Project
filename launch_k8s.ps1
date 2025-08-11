@@ -51,6 +51,7 @@ kubectl apply -f k8s/prometheus.yaml
 kubectl apply -f k8s/grafana.yaml
 
 # 2. Wait for deployment
+Start-InNewWindow -Command "& 'C:\Users\adela\adela\bin\kubectl.exe' port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
 Write-Host "Waiting for services to become ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
 Start-InNewWindow -Command "minikube service ml-service --url" -Title "ml_service" 
@@ -70,7 +71,6 @@ if ($prometheusSvc) {
     Write-Host "Prometheus service not found - skipping port-forward" -ForegroundColor Yellow
 }
 Start-InNewWindow -Command "& `"$kubectlPath`" port-forward svc/grafana 3000 -n monitoring" -Title "Grafana" 
-Start-InNewWindow -Command "& 'C:\Users\adela\adela\bin\kubectl.exe' port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
 
 # 4. Get service URLs
 Write-Host "`nApplication Endpoints:"
