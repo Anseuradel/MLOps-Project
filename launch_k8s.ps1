@@ -24,9 +24,11 @@ function Start-InNewWindow {
     $psPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
     if (-not (Test-Path $psPath)) {
         Write-Host "PowerShell not found at $psPath" -ForegroundColor Red
-        $psPath = "powershell.exe"  # Fallback
+        $psPath = "powershell.exe"
     }
-    
+
+    Write-Host "Launching new window with command:" $Command
+
     Start-Process wt -ArgumentList @(
         "-w", "0", "nt",
         "-d", (Get-Location).Path,
@@ -36,6 +38,7 @@ function Start-InNewWindow {
         "-Command", $Command
     ) -ErrorAction Stop
 }
+
 
 # 1. Apply Kubernetes manifests
 Write-Host "Deploying Kubernetes resources..."
