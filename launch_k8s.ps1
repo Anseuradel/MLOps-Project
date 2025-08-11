@@ -3,17 +3,38 @@
 # 1. Minikube cluster is already running
 # 2. Docker images are already built/loaded
 
+# function Start-InNewWindow {
+#     param (
+#         [string]$Command,
+#         [string]$Title
+#     )
+#     Start-Process wt -ArgumentList @(
+#         "-w", "0", "nt", 
+#         "-d", (Get-Location).Path,
+#         "--title", $Title,
+#         "powershell", "-NoExit", "-Command", $Command
+#     )
+# }
+
 function Start-InNewWindow {
     param (
         [string]$Command,
         [string]$Title
     )
+    $psPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+    if (-not (Test-Path $psPath)) {
+        Write-Host "PowerShell not found at $psPath" -ForegroundColor Red
+        $psPath = "powershell.exe"  # Fallback
+    }
+    
     Start-Process wt -ArgumentList @(
-        "-w", "0", "nt", 
+        "-w", "0", "nt",
         "-d", (Get-Location).Path,
         "--title", $Title,
-        "powershell", "-NoExit", "-Command", $Command
-    )
+        $psPath,
+        "-NoExit",
+        "-Command", $Command
+    ) -ErrorAction Stop
 }
 
 # 1. Apply Kubernetes manifests
