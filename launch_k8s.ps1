@@ -56,16 +56,18 @@ Start-InNewWindow -Command "uvicorn src.api.main:app --reload --port 8001" -Titl
 # 3. Set up port forwarding
 # Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n monitoring" -Title "Prometheus"
 
+$kubectlPath = "C:\Users\adela\adela\bin\kubectl.exe"
+
 # Prometheus section - only run if service exists
-$prometheusSvc = kubectl get svc prometheus -n monitoring --ignore-not-found
+$prometheusSvc = & $kubectlPath get svc prometheus -n monitoring --ignore-not-found
 if ($prometheusSvc) {
-    Start-InNewWindow -Command "kubectl port-forward svc/prometheus -n monitoring 9090:9090" -Title "Prometheus"
+    Start-InNewWindow -Command "& `"$kubectlPath`" port-forward svc/prometheus -n monitoring 9090:9090" -Title "Prometheus"
     Start-Sleep -Seconds 2
 } else {
     Write-Host "Prometheus service not found - skipping port-forward" -ForegroundColor Yellow
 }
-Start-InNewWindow -Command "kubectl port-forward svc/grafana 3000 -n monitoring" -Title "Grafana" 
-Start-InNewWindow -Command "kubectl port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
+Start-InNewWindow -Command "& `"$kubectlPath`" port-forward svc/grafana 3000 -n monitoring" -Title "Grafana" 
+Start-InNewWindow -Command "& `"$kubectlPath`" port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
 
 # 4. Get service URLs
 Write-Host "`nApplication Endpoints:"
