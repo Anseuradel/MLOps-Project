@@ -99,28 +99,18 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grafana-dashboards
+  name: grafana-datasources
 data:
-  default-dashboard.json: |-
-    {
-      "title": "Kubernetes Monitoring",
-      "tags": ["kubernetes"],
-      "style": "dark",
-      "timezone": "browser",
-      "editable": true,
-      "hideControls": false,
-      "sharedCrosshair": false,
-      "panels": [
-        {
-          "title": "Cluster CPU Usage",
-          "type": "graph",
-          "datasource": "Prometheus",
-          "targets": [
-            {
-              "expr": "sum(rate(container_cpu_usage_seconds_total{container_name!=\"POD\",pod_name!=\"\"}[5m])) by (pod_name)",
-              "legendFormat": "{{pod_name}}"
-            }
-          ]
-        }
-      ]
-    }
+  prometheus.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus:9090
+      access: proxy
+      isDefault: true
+      jsonData:
+        timeInterval: "15s"
+        httpMethod: "POST"
+      version: 1
+      editable: false
