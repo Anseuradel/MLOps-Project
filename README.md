@@ -13,3 +13,4 @@ how to start project :
 >>   -Body '{"text":"This is a test prediction"}'
 
 8) if i have to make a change in api or model : docker build -t adelanseur95/ml-service:latest .
+9) don't forget if model is changed, you need to run locally the file to create the model.joblib
