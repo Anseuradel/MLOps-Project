@@ -50,6 +50,7 @@ kubectl apply -f k8s/grafana.yaml
 # 2. Wait for deployment
 Write-Host "Waiting for services to become ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
+Start-InNewWindow -Command "minikube service ml-service --url" -Title "ml_service" 
 
 # 3. Set up port forwarding
 # Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n monitoring" -Title "Prometheus"
