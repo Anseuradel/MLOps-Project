@@ -1,4 +1,9 @@
-# k8s/grafana.yaml
+# grafana.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,20 +31,6 @@ spec:
       - name: grafana-storage
         persistentVolumeClaim:
           claimName: grafana-pvc
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: grafana-pvc
-  namespace: monitoring
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-
 ---
 apiVersion: v1
 kind: Service
@@ -51,6 +42,18 @@ spec:
   ports:
   - port: 3000
     targetPort: 3000
-    nodePort: 32000
+    nodePort: 30300
   selector:
     app: grafana
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
