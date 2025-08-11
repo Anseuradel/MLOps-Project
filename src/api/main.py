@@ -98,7 +98,7 @@ async def predict(request: PredictionRequest):
             "prediction_label": "positive" if prediction[0] == 1 else "negative",
             "model_version": "1.0.0",
             "model_type": "SentimentAnalysis",
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.utcnow().isoformat(),
             "status": "success",
             "processing_time_ms": (time() - start_time) * 1000
         }
