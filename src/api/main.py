@@ -10,7 +10,8 @@ from time import time
 from typing import Dict, Any
 from typing import Literal, Optional
 from datetime import datetime
-import logging
+
+
 # Initialize FastAPI app with metadata
 app = FastAPI(title="ML Model Serving API")
 Instrumentator().instrument(app).expose(app)
@@ -51,15 +52,15 @@ class PredictionResponse(BaseModel):
     """
     text: str
     prediction: int
-    # prediction_label: str
-    # confidence: Optional[float] = None
-    # probabilities: Optional[dict] = None
-    # model_version: str
-    # model_type: str
-    # processing_time_ms: float
-    # timestamp: datetime
-    # status: Literal["success", "error"]
-    # error_details: Optional[str] = None
+    prediction_label: str
+    confidence: Optional[float] = None
+    probabilities: Optional[dict] = None
+    model_version: str
+    model_type: str
+    processing_time_ms: float
+    timestamp: datetime
+    status: Literal["success", "error"]
+    error_details: Optional[str] = None
 
 @app.get("/health")
 async def health_check():
@@ -101,12 +102,12 @@ async def predict(request: PredictionRequest):
         response_data = {
             "text": request.text,
             "prediction": int(prediction[0]),
-            # "prediction_label": "positive" if prediction[0] == 1 else "negative",
-            # "model_version": "1.0.0",
-            # "model_type": "SentimentAnalysis",
-            # "timestamp": datetime.utcnow().isoformat(),
-            # "status": "success",
-            # "processing_time_ms": (time() - start_time) * 1000
+            "prediction_label": "positive" if prediction[0] == 1 else "negative",
+            "model_version": "1.0.0",
+            "model_type": "SentimentAnalysis",
+            "timestamp": datetime.utcnow().isoformat(),
+            "status": "success",
+            "processing_time_ms": (time() - start_time) * 1000
         }
 
         if hasattr(model, "predict_proba"):
@@ -142,7 +143,7 @@ async def predict(request: PredictionRequest):
             detail={
                 "status": "error",
                 "error_details": str(e),
-                "timestamp": datetime.utcnow(),
+                "timestamp": datetime.utcnow().isoformat(),
                 "processing_time_ms": (time() - start_time) * 1000
             }
         )
@@ -155,7 +156,7 @@ async def predict(request: PredictionRequest):
             detail={
                 "status": "error",
                 "error_details": "Internal server error",
-                "timestamp": datetime.utcnow(),
+                "timestamp": datetime.utcnow().isoformat(),
                 "processing_time_ms": (time() - start_time) * 1000
             }
         )
@@ -179,12 +180,12 @@ async def predict_test(request: PredictionRequest):
     return {
         "text": request.text,
         "prediction": 1,
-        # "prediction_label": "positive",
-        # "confidence": 0.95,
-        # "probabilities": {"negative": 0.05, "positive": 0.95},
-        # "model_version": "1.0.0",
-        # "model_type": "SentimentAnalysis",
-        # "processing_time_ms": 42.5,
-        # "timestamp": datetime.utcnow(),
-        # "status": "success"
+        "prediction_label": "positive",
+        "confidence": 0.95,
+        "probabilities": {"negative": 0.05, "positive": 0.95},
+        "model_version": "1.0.0",
+        "model_type": "SentimentAnalysis",
+        "processing_time_ms": 42.5,
+        "timestamp": datetime.utcnow().isoformat(),
+        "status": "success"
     }
