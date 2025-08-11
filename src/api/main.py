@@ -129,17 +129,16 @@ async def predict(request: PredictionRequest):
             }
         )
         
-    except ModelLoadError as e:
-        error_counter.labels(status_code="503").inc()
-        raise HTTPException(
-            status_code=503,
-            detail={
-                "status": "error",
-                "error_details": str(e),
-                "timestamp": datetime.utcnow(),
-                "processing_time_ms": (time() - start_time) * 1000
-            }
-        )
+    raise HTTPException(
+    status_code=400,
+    detail={
+        "status": "error",
+        "error_details": str(e),
+        "text": request.text,
+        "timestamp": datetime.utcnow().isoformat(),
+        "processing_time_ms": (time() - start_time) * 1000
+        }
+    )
         
     except Exception as e:
         error_counter.labels(status_code="500").inc()
