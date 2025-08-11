@@ -51,6 +51,7 @@ kubectl apply -f k8s/grafana.yaml
 Write-Host "Waiting for services to become ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
 Start-InNewWindow -Command "minikube service ml-service --url" -Title "ml_service" 
+Start-InNewWindow -Command "uvicorn src.api.main:app --reload --port 8001" -Title "fastapi" 
 
 # 3. Set up port forwarding
 # Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n monitoring" -Title "Prometheus"
