@@ -88,8 +88,14 @@ async def metrics():
 async def predict(request: PredictionRequest):
     start_time = time()
     try:
+        logging.info("Loading model...")
+      
         model = ModelTrainer.load_model()
+
+        logging.info("Model loaded successfully.")
         prediction = model.predict([request.text])
+      
+        ogging.info(f"Prediction made: {prediction}")
         
         # Create complete response
         response_data = {
@@ -142,6 +148,7 @@ async def predict(request: PredictionRequest):
         )
         
     except Exception as e:
+        logging.error(f"Error in predict: {e}", exc_info=True)
         error_counter.labels(status_code="500").inc()
         raise HTTPException(
             status_code=500,
