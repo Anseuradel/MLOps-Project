@@ -51,15 +51,15 @@ class PredictionResponse(BaseModel):
     """
     text: str
     prediction: int
-    prediction_label: str
-    confidence: Optional[float] = None
-    probabilities: Optional[dict] = None
-    model_version: str
-    model_type: str
-    processing_time_ms: float
-    timestamp: datetime
-    status: Literal["success", "error"]
-    error_details: Optional[str] = None
+    # prediction_label: str
+    # confidence: Optional[float] = None
+    # probabilities: Optional[dict] = None
+    # model_version: str
+    # model_type: str
+    # processing_time_ms: float
+    # timestamp: datetime
+    # status: Literal["success", "error"]
+    # error_details: Optional[str] = None
 
 @app.get("/health")
 async def health_check():
