@@ -55,7 +55,7 @@ kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n d
 # Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n monitoring" -Title "Prometheus"
 
 # Prometheus section - only run if service exists
-$prometheusSvc = kubectl get svc prometheus -n default --ignore-not-found
+$prometheusSvc = kubectl get svc prometheus -n monitoring --ignore-not-found
 if ($prometheusSvc) {
     Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n default" -Title "Prometheus"
     Start-Sleep -Seconds 2
