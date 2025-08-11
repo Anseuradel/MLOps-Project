@@ -50,17 +50,17 @@ kubectl apply -f k8s/hpa.yaml
 kubectl apply -f k8s/prometheus.yaml
 kubectl apply -f k8s/grafana.yaml
 
+$kubectlPath = "C:\Users\adela\adela\bin\kubectl.exe"
+
 # 2. Wait for deployment
 # Start-InNewWindow -Command "& 'C:\Users\adela\adela\bin\kubectl.exe' port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
 Write-Host "Waiting for services to become ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
-Start-InNewWindow -Command "minikube service ml-service --url" -Title "ml_service" 
-Start-InNewWindow -Command "uvicorn src.api.main:app --reload --port 8001" -Title "fastapi" 
+Start-InNewWindow -Command "& `"$kubectlPath`" minikube service ml-service --url" -Title "ml_service" 
+Start-InNewWindow -Command "& `"$kubectlPath`" uvicorn src.api.main:app --reload --port 8001" -Title "fastapi" 
 
 # 3. Set up port forwarding
 # Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n monitoring" -Title "Prometheus"
-
-$kubectlPath = "C:\Users\adela\adela\bin\kubectl.exe"
 
 # Prometheus section - only run if service exists
 $prometheusSvc = & $kubectlPath get svc prometheus -n monitoring --ignore-not-found
