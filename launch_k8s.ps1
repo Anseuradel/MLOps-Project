@@ -52,7 +52,16 @@ Write-Host "Waiting for services to become ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
 
 # 3. Set up port forwarding
-Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n monitoring" -Title "Prometheus"
+# Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n monitoring" -Title "Prometheus"
+
+# Prometheus section - only run if service exists
+$prometheusSvc = kubectl get svc prometheus -n default --ignore-not-found
+if ($prometheusSvc) {
+    Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n default" -Title "Prometheus"
+    Start-Sleep -Seconds 2
+} else {
+    Write-Host "⚠️  Prometheus service not found - skipping port-forward" -ForegroundColor Yellow
+}
 Start-InNewWindow -Command "kubectl port-forward svc/grafana 3000 -n monitoring" -Title "Grafana" 
 Start-InNewWindow -Command "kubectl port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
 
