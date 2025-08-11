@@ -60,7 +60,7 @@ if ($prometheusSvc) {
     Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n default" -Title "Prometheus"
     Start-Sleep -Seconds 2
 } else {
-    Write-Host "⚠️  Prometheus service not found - skipping port-forward" -ForegroundColor Yellow
+    Write-Host "Prometheus service not found - skipping port-forward" -ForegroundColor Yellow
 }
 Start-InNewWindow -Command "kubectl port-forward svc/grafana 3000 -n monitoring" -Title "Grafana" 
 Start-InNewWindow -Command "kubectl port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
