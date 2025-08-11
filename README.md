@@ -11,3 +11,5 @@ how to start project :
 >>   -Method Post `
 >>   -Headers @{"Content-Type"="application/json"} `
 >>   -Body '{"text":"This is a test prediction"}'
+
+8) if i have to make a change in api or model : docker build -t adelanseur95/ml-service:latest .
