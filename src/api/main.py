@@ -10,7 +10,7 @@ from time import time
 from typing import Dict, Any
 from typing import Literal, Optional
 from datetime import datetime
-
+import logging
 # Initialize FastAPI app with metadata
 app = FastAPI(title="ML Model Serving API")
 Instrumentator().instrument(app).expose(app)
@@ -95,7 +95,7 @@ async def predict(request: PredictionRequest):
         logging.info("Model loaded successfully.")
         prediction = model.predict([request.text])
       
-        ogging.info(f"Prediction made: {prediction}")
+        logging.info(f"Prediction made: {prediction}")
         
         # Create complete response
         response_data = {
