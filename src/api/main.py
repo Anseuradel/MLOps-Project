@@ -14,12 +14,11 @@ from datetime import datetime
 
 # Initialize FastAPI app with metadata
 app = FastAPI(title="ML Model Serving API")
-# Instrumentator().instrument(app).expose(app)
+Instrumentator().instrument(app).expose(app)
 
 # Prometheus metrics counter
 prediction_counter = Counter('model_predictions_total',
-                           'Total number of predictions made',
-                           ['error_type'])
+                           'Total number of predictions made')
 
 error_counter = Counter(
     'http_errors_total',
@@ -98,7 +97,7 @@ async def predict(request: PredictionRequest):
 
         # Increment prediction counter with "none" as no error occurred
         logging.info("Incrementing prediction_counter with error_type=none")
-        prediction_counter.labels(error_type="none").inc()
+        prediction_counter.inc()
 
         response_data = {
             "text": request.text,
@@ -125,7 +124,7 @@ async def predict(request: PredictionRequest):
 
     except ValueError as e:
         logging.info("Incrementing prediction_counter with error_type=none")
-        prediction_counter.labels(error_type="value_error").inc()
+        prediction_counter.inc()
         error_counter.labels(status_code="400").inc()
         raise HTTPException(
             status_code=400,
@@ -140,7 +139,7 @@ async def predict(request: PredictionRequest):
 
     except ModelLoadError as e:
         logging.info("Incrementing prediction_counter with error_type=none")
-        prediction_counter.labels(error_type="model_load_error").inc()
+        prediction_counter.inc()
         error_counter.labels(status_code="503").inc()
         raise HTTPException(
             status_code=503,
@@ -155,7 +154,7 @@ async def predict(request: PredictionRequest):
     except Exception as e:
         logging.error(f"Error in predict: {e}", exc_info=True)
         logging.info("Incrementing prediction_counter with error_type=none")
-        prediction_counter.labels(error_type="unknown_error").inc()
+        prediction_counter.inc()
         error_counter.labels(status_code="500").inc()
         raise HTTPException(
             status_code=500,
