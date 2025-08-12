@@ -23,7 +23,6 @@ prediction_counter = Counter('model_predictions_total',
 error_counter = Counter(
     'http_errors_total',
     'Total API errors',
-    ['status_code']
 )
 
 model_load_error = Counter('model_load_errors_total', 'Total model loading failures')
