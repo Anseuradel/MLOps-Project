@@ -14,3 +14,20 @@ how to start project :
 
 8) if i have to make a change in api or model : docker build -t adelanseur95/ml-service:latest .
 9) don't forget if model is changed, you need to run locally the file to create the model.joblib
+10) Build & push the new image with the model
+
+
+    docker build -t adelanseur95/ml-service:latest .
+    docker push adelanseur95/ml-service:latest
+    
+    
+    kubectl set image deployment/ml-service ml-service=adelanseur95/ml-service:latest -n default
+    
+    kubectl get pods -w
+    
+    kubectl port-forward svc/ml-service 8000:8000 -n default
+    
+    Invoke-RestMethod -Uri "http://localhost:8000/predict" `
+      -Method Post `
+      -Headers @{"Content-Type"="application/json"} `
+      -Body '{"text":"This is a test prediction"}'
