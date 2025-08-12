@@ -6,11 +6,30 @@ metadata:
 data:
   prometheus.yml: |
     global:
-      scrape_interval: 15s
+    scrape_interval: 15s
     scrape_configs:
+      # Scrape your ML service metrics
       - job_name: 'ml-service'
         static_configs:
           - targets: ['ml-service.default.svc.cluster.local:8000']
+    
+      # Scrape kubelet's cAdvisor metrics for container CPU & memory
+      - job_name: 'kubelet-cadvisor'
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - source_labels: [__address__]
+            regex: '(.*):10250'
+            replacement: '${1}:10250'
+            target_label: __address__
+          - target_label: __metrics_path__
+            replacement: /metrics/cadvisor
+
+
 
 ---
 apiVersion: apps/v1
