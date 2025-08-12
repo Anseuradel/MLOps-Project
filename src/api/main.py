@@ -120,7 +120,7 @@ async def predict(request: PredictionRequest):
                 }
             })
 
-        prediction_counter.inc()
+        prediction_counter.labels(error_type="none").inc()
         return response_data
 
     except ValueError as e:
