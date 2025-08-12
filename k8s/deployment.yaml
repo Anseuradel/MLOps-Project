@@ -61,5 +61,5 @@ spec:
         projected:
           sources:
             - serviceAccountToken:
-              path: token
-              expirationSeconds: 3600
+              # path: token
+              # expirationSeconds: 3600
