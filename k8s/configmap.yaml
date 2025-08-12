@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: ml-service-config
 data:
-  MODEL_PATH: "/models/sentiment_model.joblib"
+  MODEL_PATH: "src/model/models/model.joblib"
   LOG_LEVEL: "INFO"
   MAX_WORKERS: "4"
