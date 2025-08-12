@@ -33,7 +33,7 @@ class ModelTrainer:
         self.model.fit(X, y)  # Train the entire pipeline
         logger.info("Model training completed")
         
-    def save_model(self, path="models/model.joblib"):
+    def save_model(self, path="src/model/models/model.joblib"):
         """
         Save the trained model to disk
         Args:
