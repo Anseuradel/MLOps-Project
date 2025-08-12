@@ -124,7 +124,7 @@ async def predict(request: PredictionRequest):
     except ValueError as e:
         logging.info("Incrementing prediction_counter with error_type=none")
         prediction_counter.inc()
-        error_counter.labels(status_code="400").inc()
+        error_counter.inc()
         raise HTTPException(
             status_code=400,
             detail={
@@ -139,7 +139,7 @@ async def predict(request: PredictionRequest):
     except ModelLoadError as e:
         logging.info("Incrementing prediction_counter with error_type=none")
         prediction_counter.inc()
-        error_counter.labels(status_code="503").inc()
+        error_counter.inc()
         raise HTTPException(
             status_code=503,
             detail={
@@ -154,7 +154,7 @@ async def predict(request: PredictionRequest):
         logging.error(f"Error in predict: {e}", exc_info=True)
         logging.info("Incrementing prediction_counter with error_type=none")
         prediction_counter.inc()
-        error_counter.labels(status_code="500").inc()
+        error_counter.inc()
         raise HTTPException(
             status_code=500,
             detail={
