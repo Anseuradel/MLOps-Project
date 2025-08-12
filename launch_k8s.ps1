@@ -49,6 +49,7 @@ kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/hpa.yaml
 kubectl apply -f k8s/prometheus.yaml
 kubectl apply -f k8s/grafana.yaml
+kubectl apply -f k8s/prometheus-rbac.yaml
 
 $kubectlPath = "C:\Users\adela\adela\bin\kubectl.exe"
 
