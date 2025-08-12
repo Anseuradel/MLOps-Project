@@ -15,7 +15,7 @@ spec:
         app: ml-service
     spec:
       containers:
-      imagePullPolicy: Always
+      - imagePullPolicy: Always
       - name: ml-service
         image: adelanseur95/ml-service:latest
         ports:
