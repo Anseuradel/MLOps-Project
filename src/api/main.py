@@ -90,15 +90,15 @@ async def predict(request: PredictionRequest):
     start_time = time()
     try:
         logging.info("Loading model...")
-      
         model = ModelTrainer.load_model()
-
         logging.info("Model loaded successfully.")
+
         prediction = model.predict([request.text])
-      
         logging.info(f"Prediction made: {prediction}")
-        
-        # Create complete response
+
+        # Increment prediction counter with "none" as no error occurred
+        prediction_counter.labels(error_type="none").inc()
+
         response_data = {
             "text": request.text,
             "prediction": int(prediction[0]),
@@ -120,23 +120,24 @@ async def predict(request: PredictionRequest):
                 }
             })
 
-        prediction_counter.labels(error_type="none").inc()
         return response_data
 
     except ValueError as e:
-      error_counter.labels(status_code="400").inc()
-      raise HTTPException(
-          status_code=400,
-          detail={
-              "status": "error",
-              "error_details": str(e),
-              "text": request.text,
-              "timestamp": datetime.utcnow().isoformat(),
-              "processing_time_ms": (time() - start_time) * 1000
-        }
-    )
-        
+        prediction_counter.labels(error_type="value_error").inc()
+        error_counter.labels(status_code="400").inc()
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "status": "error",
+                "error_details": str(e),
+                "text": request.text,
+                "timestamp": datetime.utcnow().isoformat(),
+                "processing_time_ms": (time() - start_time) * 1000
+            }
+        )
+
     except ModelLoadError as e:
+        prediction_counter.labels(error_type="model_load_error").inc()
         error_counter.labels(status_code="503").inc()
         raise HTTPException(
             status_code=503,
@@ -147,9 +148,10 @@ async def predict(request: PredictionRequest):
                 "processing_time_ms": (time() - start_time) * 1000
             }
         )
-        
+
     except Exception as e:
         logging.error(f"Error in predict: {e}", exc_info=True)
+        prediction_counter.labels(error_type="unknown_error").inc()
         error_counter.labels(status_code="500").inc()
         raise HTTPException(
             status_code=500,
