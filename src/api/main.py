@@ -14,7 +14,7 @@ from datetime import datetime
 
 # Initialize FastAPI app with metadata
 app = FastAPI(title="ML Model Serving API")
-Instrumentator().instrument(app).expose(app)
+# Instrumentator().instrument(app).expose(app)
 
 # Prometheus metrics counter
 prediction_counter = Counter('model_predictions_total',
