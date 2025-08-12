@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ml-service
-        image: adelanseur95/ml-service:v3
+        image: adelanseur95/ml-service:latest
         ports:
         - containerPort: 8000
         envFrom:
