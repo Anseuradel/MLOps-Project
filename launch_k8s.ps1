@@ -16,6 +16,29 @@
 #     )
 # }
 
+# function Start-InNewWindow {
+#     param (
+#         [string]$Command,
+#         [string]$Title
+#     )
+#     $psPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+#     if (-not (Test-Path $psPath)) {
+#         Write-Host "PowerShell not found at $psPath" -ForegroundColor Red
+#         $psPath = "powershell.exe"
+#     }
+
+#     Write-Host "Launching new window with command:" $Command
+
+#     Start-Process wt -ArgumentList @(
+#         "-w", "0", "nt",
+#         "-d", (Get-Location).Path,
+#         "--title", $Title,
+#         $psPath,
+#         "-NoExit",
+#         "-Command", $Command
+#     ) -ErrorAction Stop
+# }
+
 function Start-InNewWindow {
     param (
         [string]$Command,
@@ -27,17 +50,17 @@ function Start-InNewWindow {
         $psPath = "powershell.exe"
     }
 
-    Write-Host "Launching new window with command:" $Command
+    Write-Host "Launching new window: $Title"
 
     Start-Process wt -ArgumentList @(
-        "-w", "0", "nt",
-        "-d", (Get-Location).Path,
-        "--title", $Title,
+        "new-tab",
+        "--title", "`"$Title`"",
         $psPath,
         "-NoExit",
-        "-Command", $Command
-    ) -ErrorAction Stop
+        "-Command", "`"$Command`""
+    )
 }
+
 
 
 # 1. Apply Kubernetes manifests
