@@ -6,7 +6,7 @@ metadata:
 data:
   prometheus.yml: |
     global:
-    scrape_interval: 15s
+      scrape_interval: 15s
     scrape_configs:
       # Scrape your ML service metrics
       - job_name: 'ml-service'
