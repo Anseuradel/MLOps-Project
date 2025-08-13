@@ -57,8 +57,19 @@ $kubectlPath = "C:\Users\adela\adela\bin\kubectl.exe"
 # Start-InNewWindow -Command "& 'C:\Users\adela\adela\bin\kubectl.exe' port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
 Write-Host "Waiting for services to become ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
-Start-InNewWindow -Command " minikube service ml-service --url" -Title "ml_service" 
-Start-InNewWindow -Command " uvicorn src.api.main:app --host 0.0.0.0 --port 8000" -Title "fastapi" 
+# Start-InNewWindow -Command " minikube service ml-service --url" -Title "ml_service" 
+# Start-InNewWindow -Command " uvicorn src.api.main:app --host 0.0.0.0 --port 8000" -Title "fastapi"
+
+# Port-forward ML service
+Start-InNewWindow -Command "& `"$kubectlPath`" port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service Port-Forward"
+
+# Get the name of the ml-service pod and follow logs
+$mlPodName = & $kubectlPath get pods -n default -l app=ml-service -o jsonpath="{.items[0].metadata.name}"
+if ($mlPodName) {
+    Start-InNewWindow -Command "& `"$kubectlPath`" logs -f $mlPodName -n default" -Title "FastAPI Logs"
+} else {
+    Write-Host "No ml-service pod found - skipping logs" -ForegroundColor Yellow
+}
 
 # 3. Set up port forwarding
 # Start-InNewWindow -Command "kubectl port-forward svc/prometheus 9090 -n monitoring" -Title "Prometheus"
