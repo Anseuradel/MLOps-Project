@@ -77,7 +77,7 @@ kubectl apply -f k8s/prometheus-rbac.yaml
 $kubectlPath = "C:\Users\adela\adela\bin\kubectl.exe"
 
 # 2. Wait for deployment
-Start-InNewWindow -Command "& 'C:\Users\adela\adela\bin\kubectl.exe' port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
+# Start-InNewWindow -Command "& 'C:\Users\adela\adela\bin\kubectl.exe' port-forward svc/ml-service 8000:8000 -n default" -Title "ML Service"
 Write-Host "Waiting for services to become ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/ml-service -n default
 Start-InNewWindow -Command " minikube service ml-service --url" -Title "ml_service" 
