@@ -5,10 +5,11 @@ how to start project :
 2) launch terminal -> minikube start -> minikube service ml-service --url
 3) - launch promotheus (only scrapes ml-service) -> kubectl port-forward svc/prometheus 9090 -n default
    - launch prometheus (only for api metrics (cpu usage etc) -> kubectl port-forward svc/kube-prometheus-stack-prometheus -n monitoring 9090:9090
-5) launch grafana -> kubectl port-forward -n monitoring deployment/grafana 3000 -> go http://localhost:3000/login (admin)
-6) launch service -> kubectl port-forward svc/ml-service 8000:8000 -n default
-7) launch fast api server -> uvicorn src.api.main:app --reload --port 8001
-8) Make predictions -> Invoke-RestMethod -Uri "http://localhost:8000/predict" `
+5) - launch grafana (only for ml-service data) -> kubectl port-forward -n monitoring deployment/grafana 3000 -> go http://localhost:3000/login (admin)
+   - launch grafana ( only for api metrics (cpu usage etc) -> kubectl port-forward svc/monitoring-grafana -n monitoring 3000:80
+7) launch service -> kubectl port-forward svc/ml-service 8000:8000 -n default
+8) launch fast api server -> uvicorn src.api.main:app --reload --port 8001
+9) Make predictions -> Invoke-RestMethod -Uri "http://localhost:8000/predict" `
 >>   -Method Post `
 >>   -Headers @{"Content-Type"="application/json"} `
 >>   -Body '{"text":"This is a test prediction"}'
