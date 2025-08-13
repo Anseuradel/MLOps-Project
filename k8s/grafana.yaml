@@ -114,3 +114,90 @@ data:
         httpMethod: "POST"
       version: 1
       editable: false
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-ml-service
+data:
+  ml-service.json: |-
+    {
+  "title": "ML Service Monitoring",
+  "tags": ["ml-service", "kubernetes"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "title": "HTTP Requests Rate",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [{
+        "expr": "rate(ml_service_http_requests_total[1m])",
+        "legendFormat": "{{pod}} - {{method}} {{route}}",
+        "interval": "15s"
+      }],
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8}
+    },
+    {
+      "title": "Request Duration (99th %ile)",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [{
+        "expr": "histogram_quantile(0.99, sum(rate(ml_service_request_duration_seconds_bucket[1m])) by (le, route, method))",
+        "legendFormat": "{{method}} {{route}}",
+        "interval": "15s"
+      }],
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8}
+    },
+    {
+      "title": "Error Rate",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "targets": [{
+        "expr": "sum(rate(ml_service_http_requests_total{status=~\"5..\"}[1m])) / sum(rate(ml_service_http_requests_total[1m]))",
+        "format": "percentunit",
+        "legendFormat": "Error Rate"
+      }],
+      "gridPos": {"x": 0, "y": 8, "w": 6, "h": 4}
+    },
+    {
+      "title": "Active Pods",
+      "type": "gauge",
+      "datasource": "Prometheus",
+      "targets": [{
+        "expr": "count(kube_pod_info{namespace=\"default\", pod=~\"ml-service-.*\"})",
+        "legendFormat": "Pods"
+      }],
+      "gridPos": {"x": 6, "y": 8, "w": 6, "h": 4}
+    },
+    {
+      "title": "CPU Usage",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [{
+        "expr": "rate(container_cpu_usage_seconds_total{container=\"ml-service\"}[1m])",
+        "legendFormat": "{{pod}}"
+      }],
+      "gridPos": {"x": 0, "y": 12, "w": 12, "h": 8}
+    },
+    {
+      "title": "Memory Usage",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [{
+        "expr": "container_memory_working_set_bytes{container=\"ml-service\"}",
+        "legendFormat": "{{pod}}",
+        "interval": "15s"
+      }],
+      "gridPos": {"x": 12, "y": 12, "w": 12, "h": 8}
+    }
+  ],
+  "templating": {
+    "list": [{
+      "name": "pod",
+      "label": "Pod",
+      "datasource": "Prometheus",
+      "query": "label_values(kube_pod_info{namespace=\"default\", pod=~\"ml-service-.*\"}, pod)"
+    }]
+  }
+}
