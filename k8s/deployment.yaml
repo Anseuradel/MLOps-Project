@@ -57,9 +57,9 @@ spec:
       # - name: config
       #   configMap:
       #     name: prometheus-config
-      - name: token
-        projected:
-          sources:
-            - serviceAccountToken:
+      # - name: token
+      #   projected:
+      #     sources:
+      #       - serviceAccountToken:
               # path: token
               # expirationSeconds: 3600
