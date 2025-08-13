@@ -28,9 +28,9 @@ spec:
           mountPath: /models
         # - name: config
         #   mountPath: /etc/prometheus
-        - name: token
-          mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-          readOnly: true
+        # - name: token
+        #   mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        #   readOnly: true
         resources:
           requests:
             memory: "512Mi"
