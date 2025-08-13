@@ -26,8 +26,8 @@ spec:
         volumeMounts:
         - name: model-storage
           mountPath: /models
-        - name: config
-          mountPath: /etc/prometheus
+        # - name: config
+        #   mountPath: /etc/prometheus
         - name: token
           mountPath: /var/run/secrets/kubernetes.io/serviceaccount
           readOnly: true
@@ -54,9 +54,9 @@ spec:
       - name: model-storage
         persistentVolumeClaim:
           claimName: model-storage
-      - name: config
-        configMap:
-          name: prometheus-config
+      # - name: config
+      #   configMap:
+      #     name: prometheus-config
       - name: token
         projected:
           sources:
