@@ -39,5 +39,5 @@ DATASET_PATH = "Dataset/text.csv"
 # Model config
 
 # outpus paths
-MODEL_TRAINING_OUTPUT_DIR = "outputs/model_output/training"
-MODEL_EVALUATION_OUTPUT_DIR = "outputs/model_output/evaluation"
+MODEL_TRAINING_OUTPUT_DIR = "outputs/training_evaluation/training"
+MODEL_EVALUATION_OUTPUT_DIR = "outputs/training_evaluation/evaluation"
