@@ -43,7 +43,12 @@ class SentimentClassifier(nn.Module):
         """
         # 1. Pass input to BERT
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        
-        pooled_output = outputs.pooler_output  # Extract [CLS] token output
+
+        # 2. Extract pooled [CLS] representation
+        pooled_output = outputs.pooler_output
+
+        # 3. Apply dropout for regularization
         dropped_output = self.dropout(pooled_output)
-        return self.fc(dropped_output)  # Final classification layer
+
+        # 4. Pass through final linear layer to get logits
+        return self.fc(dropped_output)
