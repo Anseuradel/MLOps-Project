@@ -34,16 +34,24 @@ def train_epoch(
     model.train()
     total_loss, correct_predictions, total_samples = 0, 0, 0
 
+    # Loops through training DataLoader (batches of data)
     for batch in tqdm(data_loader, desc="Training"):
+        # Sends data to GPU/CPU (input_ids, attention_mask, labels).
         input_ids = batch["input_ids"].to(device)
         attention_mask = batch["attention_mask"].to(device)
         targets = batch["targets"].to(device)
 
         optimizer.zero_grad()
+        # Runs the model
         outputs = model(input_ids=input_ids, attention_mask=attention_mask)
-
+        
+        # Computes loss (how wrong the predictions are)
         loss = loss_fn(outputs, targets)
+
+        # Computes gradient
         loss.backward()
+
+        # Updates model weigths
         optimizer.step()
         scheduler.step()
 
