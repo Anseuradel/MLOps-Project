@@ -48,7 +48,7 @@ def create_dataloader(df, tokenizer, max_len, batch_size):
     # Create dataset
     dataset = SentimentDataset(df, labels, tokenizer, max_len)
 
-    return Dataloader(
+    return DataLoader(
         dataset,
         labels,
         batch_size,
