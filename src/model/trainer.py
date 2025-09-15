@@ -90,7 +90,10 @@ def train_model(
     os.makedirs(run_dir, exist_ok=True)
 
     best_val_acc = 0
-    history = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": []}
+    history = {"train_loss": [],
+               "train_acc": [],
+               "val_loss": [],
+               "val_acc": []}
 
     for epoch in range(epochs):
         print(f"Epoch {epoch + 1}/{epochs}")
