@@ -41,3 +41,9 @@ DATASET_PATH = "Dataset/text.csv"
 # outpus paths
 MODEL_TRAINING_OUTPUT_DIR = "outputs/training_evaluation/training"
 MODEL_EVALUATION_OUTPUT_DIR = "outputs/training_evaluation/evaluation"
+
+# -------------------------------------------------------------------------
+# Test dataset folder path
+TEST_DATA_DIR = "dataset/test_datasets"  # folder containing test data files
+os.makedirs(TEST_DATA_DIR, exist_ok=True)
+
