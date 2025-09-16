@@ -5,6 +5,8 @@ from src.model.data_extraction import load_data
 from src.model.data_processing import preprocess_data
 from src.model.dataloader import create_dataloader
 from src.model.model import SentimentClassifier
+from src.model.trainer import train_model
+from src.model.evaluate import evaluate
 
 def datalaoder_train_test_val(df):
   data = create_dataloader(df, tokenizer,test_size=MAX_LEN, batch_size=BATCH_SIZE)
@@ -39,9 +41,12 @@ def main():
   model = SentimentClassifier(n_classes=N_CLASSES).to(DEVICE)
 
   # Training model
-  print("Trainin model\n")
+  print("Training model\n")
+  trained_model = train_model(model, train_data, val_data, device=DEVICE, epochs=EPOCHS)
 
-  
-  
-  
-  
+  # Evaluate model 
+  print("Evaluating model\n")
+
+
+if __main__ == "__main__":
+  main()
