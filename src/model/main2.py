@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split
 
-from config import *
+import config
 from src.model.data_extraction import load_data
 from src.model.data_processing import preprocess_data
 from src.model.dataloader import create_dataloader
