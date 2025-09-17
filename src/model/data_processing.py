@@ -18,7 +18,7 @@ def clean_text(text):
     text = re.sub(r"\W", " ", text)                     # remove punctuation
     text = re.sub(r"\s+", " ", text)                    # remove extra spaces
     text = regex.compile(r'\p{Emoji}').sub('', text)  # remove emoticones
-    text = " ".join([word for word in text.split() if word not in stop_words])
+    # text = " ".join([word for word in text.split() if word not in stop_words])
     return text
 
 
