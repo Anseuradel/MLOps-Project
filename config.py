@@ -1,4 +1,5 @@
 import torch
+import os
 
 # --------------------------------------------------------------------------
 # Define 5-class sentiment mapping
