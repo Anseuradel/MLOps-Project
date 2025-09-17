@@ -6,7 +6,9 @@ from nltk.corpus import stopwords
 import config
 
 import re 
+import regex
 from sklearn.model_selection import train_test_split
+from transformers import AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained(config.TOKENIZER_NAME)
 
