@@ -11,6 +11,7 @@ from src.model.trainer import train_model
 from src.model.evaluate import evaluate
 
 def dataloader_train_test_val(df):
+  tokenizer = AutoTokenizer.from_pretrained(config.TOKENIZER_NAME)
   data = create_dataloader(df, tokenizer,test_size=config.MAX_LEN, batch_size=config.BATCH_SIZE)
   return data
 
@@ -28,7 +29,7 @@ def main():
   # Apply preprocessing using data_processing file's fucntion
   train_data, val_data = preprocess_data(train_data_raw, test_size=config.VAL_SIZE, max_length=config.MAX_LEN)
 
-  tokenizer = AutoTokenizer.from_pretrained(config.TOKENIZER_NAME)
+  # tokenizer = AutoTokenizer.from_pretrained(config.TOKENIZER_NAME)
 
   # Step 2 : Dataloader
   print("Creating dataloaders\n") 
