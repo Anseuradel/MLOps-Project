@@ -36,10 +36,10 @@ def tokenize_texts(texts, max_length):
 
 def preprocess_data(df, test_size, max_length):
   # Ensure content column is cleaned
-    df["content"] = df["content"].apply(clean_text)
+    df["text"] = df["text"].apply(clean_text)
 
     # Tokenize the cleaned text
-    tokenized_data = tokenize_texts(df["content"].tolist(), max_length)
+    tokenized_data = tokenize_texts(df["text"].tolist(), max_length)
 
     # Add tokenized columns back to the dataframe
     df["input_ids"] = tokenized_data["input_ids"]
