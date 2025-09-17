@@ -18,7 +18,7 @@ SENTIMENT_MAPPING_3_LABEL_VERSION = {
     3: "Positive",
 }
 
-LABEL_MAPPING = {1: 0, 2: 1, 3: 2, 4: 3, 5: 4}
+LABEL_MAPPING = {0:0, 1:1, 2:2, 3:3, 4:4, 5:5}
 
 # --------------------------------------------------------------------------
 # Model config
