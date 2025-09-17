@@ -1,3 +1,5 @@
+import torch
+
 # --------------------------------------------------------------------------
 # Define 5-class sentiment mapping
 SENTIMENT_MAPPING = {
