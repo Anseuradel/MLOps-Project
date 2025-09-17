@@ -1,4 +1,5 @@
 from sklearn.model_selection import train_test_split
+from transformers import AutoTokenizer
 
 import config
 from src.model.data_extraction import load_data
