@@ -38,12 +38,12 @@ def load_data(file_path, merge_labels):
         df = load_file_by_type(file_path)
 
         # Check if required columns exist
-        required_columns = {"content", "score"}
+        required_columns = {"text", "label"}
         if not required_columns.issubset(df.columns):
-            raise ValueError("Dataset must contain 'content' and 'score' columns.")
+            raise ValueError("Dataset must contain 'text' and 'label' columns.")
 
         # Keep only relevant columns
-        df = df[["content", "score"]].dropna()
+        df = df[["text", "label"]].dropna()
 
         # ✅ Convert `score` values using `LABEL_MAPPING` (1-5 → 0-4)
         if not df["score"].isin(LABEL_MAPPING.keys()).all():
@@ -51,16 +51,16 @@ def load_data(file_path, merge_labels):
                 f"Dataset contains invalid score values. Allowed values: {sorted(LABEL_MAPPING.keys())}"
             )
 
-        df["score"] = df["score"].map(LABEL_MAPPING)
+        df["label"] = df["label"].map(LABEL_MAPPING)
 
         # If merge_labels is True, merge the labels into broader categories
         if merge_labels:
-            df["score"] = df["score"].apply(merge_score_labels)
-            df["label"] = df["score"].map(
+            df["label"] = df["label"].apply(merge_score_labels)
+            df["label"] = df["label"].map(
                 lambda x: SENTIMENT_MAPPING_3_LABEL_VERSION[x + 1]
             )
         else:
-            df["label"] = df["score"].map(lambda x: SENTIMENT_MAPPING[x + 1])
+            df["label"] = df["label"].map(lambda x: SENTIMENT_MAPPING[x + 1])
 
         return df
 
