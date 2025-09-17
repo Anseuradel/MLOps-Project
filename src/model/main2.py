@@ -10,7 +10,7 @@ from src.model.model import SentimentClassifier
 from src.model.trainer import train_model
 from src.model.evaluate import evaluate
 
-def datalaoder_train_test_val(df):
+def dataloader_train_test_val(df):
   data = create_dataloader(df, tokenizer,test_size=config.MAX_LEN, batch_size=config.BATCH_SIZE)
   return data
 
