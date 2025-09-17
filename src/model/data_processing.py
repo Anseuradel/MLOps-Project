@@ -32,7 +32,7 @@ def tokenize_texts(texts, max_length):
      "attention_mask": tokenized["attention_mask"].tolist(),
    }
 
-def preprocess_data(df, test_size, max_length)
+def preprocess_data(df, test_size, max_length):
   # Ensure content column is cleaned
     df["content"] = df["content"].apply(clean_text)
 
