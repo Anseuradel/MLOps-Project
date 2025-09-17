@@ -4,6 +4,7 @@ import os
 # --------------------------------------------------------------------------
 # Define 5-class sentiment mapping
 SENTIMENT_MAPPING = {
+    0: "Horrible",
     1: "Really Negative",
     2: "Negative",
     3: "Neutral",
