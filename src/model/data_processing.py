@@ -3,7 +3,7 @@ import numpy as np
 import nltk
 from nltk.corpus import stopwords
 
-from conif import *
+from config import *
 
 import re 
 from sklearn.model_selection import train_test_split
