@@ -12,7 +12,7 @@ from src.model.evaluate import evaluate
 
 def dataloader_train_test_val(df):
   tokenizer = AutoTokenizer.from_pretrained(config.TOKENIZER_NAME)
-  data = create_dataloader(df, tokenizer,test_size=config.MAX_LEN, batch_size=config.BATCH_SIZE)
+  data = create_dataloader(df, tokenizer, max_len=config.MAX_LEN, batch_size=config.BATCH_SIZE)
   return data
 
 def main():
