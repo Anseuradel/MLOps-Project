@@ -46,7 +46,7 @@ def load_data(file_path, merge_labels):
         df = df[["text", "label"]].dropna()
 
         # ✅ Convert `score` values using `LABEL_MAPPING` (1-5 → 0-4)
-        if not df["score"].isin(LABEL_MAPPING.keys()).all():
+        if not df["label"].isin(LABEL_MAPPING.keys()).all():
             raise ValueError(
                 f"Dataset contains invalid score values. Allowed values: {sorted(LABEL_MAPPING.keys())}"
             )
