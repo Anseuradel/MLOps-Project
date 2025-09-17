@@ -3,12 +3,12 @@ import numpy as np
 import nltk
 from nltk.corpus import stopwords
 
-from config import *
+import config
 
 import re 
 from sklearn.model_selection import train_test_split
 
-tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_NAME)
+tokenizer = AutoTokenizer.from_pretrained(config.TOKENIZER_NAME)
 
 def clean_text(text):
     text = text.lower()                                # lowercase
