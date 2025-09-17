@@ -15,8 +15,8 @@ from transformers import get_scheduler
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 
-from src.models.evaluate import evaluate
-from src.models.model import SentimentClassifier
+from src.model.evaluate import evaluate
+from src.model.model import SentimentClassifier
 from config import MODEL_TRAINING_OUTPUT_DIR
 
 
