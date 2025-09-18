@@ -34,21 +34,21 @@ def evaluate(model: Module, data_loader: DataLoader, loss_fn: nn.Module, device:
         for batch in tqdm(data_loader, desc="Evaluating"):
             input_ids = batch["input_ids"].to(device)
             attention_mask = batch["attention_mask"].to(device)
-            targets = batch["targets"].to(device)
+            labels = batch["labels"].to(device)
 
             outputs = model(input_ids=input_ids, attention_mask=attention_mask)
 
-            loss = loss_fn(outputs, targets)
+            loss = loss_fn(outputs, labels)
             total_loss += loss.item()
 
             probs = torch.softmax(outputs, dim=1)  # Convert logits to probabilities
             predictions = torch.argmax(probs, dim=1)
 
-            correct_predictions += (predictions == targets).sum().item()
-            total_samples += targets.size(0)
+            correct_predictions += (predictions == labels).sum().item()
+            total_samples += labels.size(0)
 
             # Store values for evaluation plots
-            all_y_true.extend(targets.cpu().numpy())
+            all_y_true.extend(labels.cpu().numpy())
             all_y_pred.extend(predictions.cpu().numpy())
             all_confidences.extend(
                 probs.max(dim=1)[0].cpu().numpy()
