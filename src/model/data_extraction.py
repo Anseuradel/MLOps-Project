@@ -51,18 +51,17 @@ def load_data(file_path, merge_labels):
                 f"Dataset contains invalid score values. Allowed values: {sorted(LABEL_MAPPING.keys())}"
             )
 
-        df["label"] = df["label"].map(LABEL_MAPPING)
+       df["label_id"] = df["label"].map(LABEL_MAPPING).astype(int)
 
-        # If merge_labels is True, merge the labels into broader categories
         if merge_labels:
-            df["label"] = df["label"].apply(merge_score_labels)
-            df["label"] = df["label"].map(
-                lambda x: SENTIMENT_MAPPING_3_LABEL_VERSION[x + 1]
-            )
+            df["label_id"] = df["label_id"].apply(merge_score_labels)
+            df["label_text"] = df["label_id"].map(SENTIMENT_MAPPING_3_LABEL_VERSION)
         else:
-            df["label"] = df["label"].map(lambda x: SENTIMENT_MAPPING[x + 1])
-
-        return df
+            df["label_text"] = df["label_id"].map(SENTIMENT_MAPPING)
+        
+        # Then only return the columns needed for training
+        return df[["text", "label_id", "label_text"]]
+        # return df
 
     except FileNotFoundError as e:
         raise FileNotFoundError(e)
