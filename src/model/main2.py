@@ -22,6 +22,12 @@ def main():
   # Load dataset using data_extraction file's function
   data = load_data(config.DATASET_PATH, merge_labels=True)
 
+  # ⚡ Reduce dataset temporarily for faster testing
+  SMALL_FRAC = 0.01  # 1% of the dataset
+  data = data.sample(frac=SMALL_FRAC, random_state=42).reset_index(drop=True)
+  print(f"Using {len(data)} samples for quick testing.")
+
+
   # Data split before preprocessing
   train_data_raw, test_data_raw = train_test_split(data, test_size=config.TEST_SIZE, random_state = 42) 
 
