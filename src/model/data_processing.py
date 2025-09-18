@@ -46,10 +46,10 @@ def preprocess_data(df, test_size, max_length):
     df["attention_mask"] = tokenized_data["attention_mask"]
 
     # Check if stratification is possible
-    if df["label"].value_counts().min() < 2:
+    if df["label_id"].value_counts().min() < 2:
         stratify_param = None
     else:
-        stratify_param = df["label"]
+        stratify_param = df["label_id"]
 
     # Split data into training and validation sets
     train_df, val_df = train_test_split(
