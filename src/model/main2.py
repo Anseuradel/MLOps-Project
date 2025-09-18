@@ -23,7 +23,7 @@ def main():
   data = load_data(config.DATASET_PATH, merge_labels=True)
 
   # ⚡ Reduce dataset temporarily for faster testing
-  SMALL_FRAC = 0.01  # 1% of the dataset
+  SMALL_FRAC = 0.001  # 1% of the dataset
   data = data.sample(frac=SMALL_FRAC, random_state=42).reset_index(drop=True)
   print(f"Using {len(data)} samples for quick testing.")
 
