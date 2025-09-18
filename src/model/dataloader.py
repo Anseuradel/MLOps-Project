@@ -43,7 +43,7 @@ def create_dataloader(df, tokenizer, max_len, batch_size):
     tokenizer = PreTrainedTokenizerBase
 
     #Convert labels to tenso
-    labels = torch.tensor(df["label"].to_numpy(), dtype=torch.long)
+    labels = torch.tensor(df["label_id"].to_numpy(), dtype=torch.long)
     
     # Create dataset
     dataset = SentimentDataset(df, labels, tokenizer, max_len)
