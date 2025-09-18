@@ -35,7 +35,7 @@ def main():
   print("Creating dataloaders\n") 
   # Creating dataloader using datalaoder file's function
   train_data = dataloader_train_test_val(train_data)
-  test_data = datalaoder_train_test_val(test_data_raw)
+  test_data = dataloader_train_test_val(test_data_raw)
   val_data = dataloader_train_test_val(val_data)
 
   #Step 3 : modeling
