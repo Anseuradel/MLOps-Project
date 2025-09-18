@@ -34,7 +34,7 @@ class SentimentDataset(Dataset):
         return {
             "input_ids": encoding["input_ids"].flatten(),
             "attention_mask": encoding["attention_mask"].flatten(),
-            "targets": torch.tensor(label, dtype=torch.long)  
+            "labels": torch.tensor(label, dtype=torch.long)  
         }
 
 
