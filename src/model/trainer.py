@@ -46,7 +46,7 @@ def train_epoch(
         outputs = model(input_ids=input_ids, attention_mask=attention_mask)
         
         # Computes loss (how wrong the predictions are)
-        loss = loss_fn(outputs, targets)
+        loss = loss_fn(outputs, labels)
 
         # Computes gradient
         loss.backward()
@@ -56,8 +56,8 @@ def train_epoch(
         scheduler.step()
 
         total_loss += loss.item()
-        correct_predictions += (outputs.argmax(dim=1) == targets).sum().item()
-        total_samples += targets.size(0)
+        correct_predictions += (outputs.argmax(dim=1) == labels).sum().item()
+        total_samples += labels.size(0)
 
     return total_loss / len(data_loader), correct_predictions / total_samples
 
