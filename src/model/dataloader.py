@@ -17,25 +17,26 @@ class SentimentDataset(Dataset):
         return len(self.reviews)
 
     def __getitem__(self, idx):
-        reviews = str(self.reviews[idx])
-        label = self.labels[idx]
+        review = str(self.reviews[idx])  
+        label = int(self.labels[idx])     
 
         encoding = self.tokenizer.encode_plus(
-            reviews,
+            review,
             add_special_tokens=True,
             max_length=self.max_len,
             return_token_type_ids=False,
             padding="max_length",
             truncation=True,
             return_attention_mask=True,
-            return_tensors="pt",
+            return_tensors="pt"
         )
 
         return {
             "input_ids": encoding["input_ids"].flatten(),
             "attention_mask": encoding["attention_mask"].flatten(),
-            "labels": torch.tensor(label, dtype=torch.long),
+            "targets": torch.tensor(label, dtype=torch.long)  
         }
+
 
 
 def create_dataloader(df, tokenizer, max_len, batch_size):
