@@ -39,7 +39,7 @@ def train_epoch(
         # Sends data to GPU/CPU (input_ids, attention_mask, labels).
         input_ids = batch["input_ids"].to(device)
         attention_mask = batch["attention_mask"].to(device)
-        labels = batch["labels"].to(device)
+        labels = batch["label_id"].to(device)
 
         optimizer.zero_grad()
         # Runs the model
