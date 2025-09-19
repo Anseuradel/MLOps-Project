@@ -57,7 +57,7 @@ def main():
   print("Evaluating model\n")
 
   sentiment_mapper = (
-        config.SENTIMENT_MAPPING if config.N_CLASSES == 6 else config.SENTIMENT_MAPPING_3_LABEL_VERSION
+        config.SENTIMENT_MAPPING if config.N_CLASSES == 5 else config.SENTIMENT_MAPPING_3_LABEL_VERSION
     )
 
   evaluate_and_plot(
@@ -65,8 +65,7 @@ def main():
           test_data,
           torch.nn.CrossEntropyLoss(),
           config.DEVICE,
-          # class_names=list(sentiment_mapper.values()),
-          class_names = 6,
+          class_names=list(sentiment_mapper.values()),
           run_folder=config.MODEL_EVALUATION_OUTPUT_DIR,
       )
 
