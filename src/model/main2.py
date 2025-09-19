@@ -8,7 +8,7 @@ from src.model.data_processing import preprocess_data
 from src.model.dataloader import create_dataloader
 from src.model.model import SentimentClassifier
 from src.model.trainer import train_model
-from src.model.evaluate import evaluate
+from src.model.evaluate import evaluate_and_plot
 
 def dataloader_train_test_val(df):
   tokenizer = AutoTokenizer.from_pretrained(config.TOKENIZER_NAME)
@@ -55,6 +55,19 @@ def main():
 
   # Evaluate model 
   print("Evaluating model\n")
+
+  sentiment_mapper = (
+        config.SENTIMENT_MAPPING if config.N_CLASSES == 6 else config.SENTIMENT_MAPPING_3_LABEL_VERSION
+    )
+
+  evaluate_and_plot(
+          trained_model,
+          test_data,
+          torch.nn.CrossEntropyLoss(),
+          config.DEVICE,
+          class_names=list(sentiment_mapper.values()),
+          run_folder=config.MODEL_EVALUATION_OUTPUT_DIR,
+      )
 
 
 if __name__ == "__main__":
