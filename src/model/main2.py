@@ -65,7 +65,8 @@ def main():
           test_data,
           torch.nn.CrossEntropyLoss(),
           config.DEVICE,
-          class_names=list(sentiment_mapper.values()),
+          # class_names=list(sentiment_mapper.values()),
+          class_names = 6,
           run_folder=config.MODEL_EVALUATION_OUTPUT_DIR,
       )
 
