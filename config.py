@@ -26,7 +26,7 @@ TOKENIZER_NAME = "bert-base-uncased"
 MODEL_NAME = "bert-base-uncased"
 
 EPOCHS = 1
-N_CLASSES = 3  # 5
+N_CLASSES = 6
 DROPOUT = 0.3
 MAX_LEN = 128
 TEST_SIZE = 0.1
