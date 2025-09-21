@@ -25,7 +25,7 @@ LABEL_MAPPING = {0:0, 1:1, 2:2, 3:3, 4:4, 5:5}
 TOKENIZER_NAME = "bert-base-uncased"
 MODEL_NAME = "bert-base-uncased"
 
-EPOCHS = 1
+EPOCHS = 10
 N_CLASSES = 6
 DROPOUT = 0.3
 MAX_LEN = 128
