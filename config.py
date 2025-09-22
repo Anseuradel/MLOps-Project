@@ -28,14 +28,14 @@ LABEL_MAPPING = {0:0, 1:1, 2:2, 3:3, 4:4, 5:5}
 MODEL_NAME = "prajjwal1/bert-tiny"
 TOKENIZER_NAME = "prajjwal1/bert-tiny"
 
-EPOCHS = 10
+EPOCHS = 3
 N_CLASSES = 6
 DROPOUT = 0.3
-MAX_LEN = 128
+MAX_LEN = 64
 TEST_SIZE = 0.1
 VAL_SIZE = 0.1
-BATCH_SIZE = 16
-LEARNING_RATE = 2e-5
+BATCH_SIZE = 32
+LEARNING_RATE = 5e-5
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # --------------------------------------------------------------------------
