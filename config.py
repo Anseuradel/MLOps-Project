@@ -22,8 +22,11 @@ LABEL_MAPPING = {0:0, 1:1, 2:2, 3:3, 4:4, 5:5}
 
 # --------------------------------------------------------------------------
 # Model config
-TOKENIZER_NAME = "bert-base-uncased"
-MODEL_NAME = "bert-base-uncased"
+# TOKENIZER_NAME = "bert-base-uncased"
+# MODEL_NAME = "bert-base-uncased"
+
+MODEL_NAME = "prajjwal1/bert-tiny"
+TOKENIZER_NAME = "prajjwal1/bert-tiny"
 
 EPOCHS = 10
 N_CLASSES = 6
