@@ -1,5 +1,5 @@
-import torch from sklearn.model_selection 
-import train_test_split 
+import torch 
+from sklearn.model_selection import train_test_split 
 from transformers import AutoTokenizer 
 import config 
 from src.model.data_extraction import load_data 
@@ -8,6 +8,11 @@ from src.model.dataloader import create_dataloader
 from src.model.model import SentimentClassifier 
 from src.model.trainer import train_model 
 from src.model.evaluate import evaluate_and_plot
+
+def dataloader_train_test_val(df): 
+    tokenizer = AutoTokenizer.from_pretrained(config.TOKENIZER_NAME) 
+    data = create_dataloader(df, tokenizer, max_len=config.MAX_LEN, batch_size=config.BATCH_SIZE) 
+    return data
 
 
 def main():
