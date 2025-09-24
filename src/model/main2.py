@@ -18,7 +18,7 @@ def dataloader_train_test_val(df):
 def main():
   # Step 1 : Data loading and tokenizer
   print("Loading dataset and tokenizer\n")
-
+  
   # Load dataset using data_extraction file's function
   data = load_data(config.DATASET_PATH, merge_labels=True)
 
