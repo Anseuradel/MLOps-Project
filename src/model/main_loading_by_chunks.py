@@ -64,3 +64,6 @@ def main():
         class_names=list(sentiment_mapper.values()),
         run_folder=config.MODEL_EVALUATION_OUTPUT_DIR,
     )
+
+if __name__ == "__main__":
+  main()
