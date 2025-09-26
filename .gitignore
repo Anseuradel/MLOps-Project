@@ -1,1 +1,2 @@
 *.pth
+!outputs/best_model.pth
