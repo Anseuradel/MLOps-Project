@@ -115,9 +115,14 @@ def train_model(
 
         # Save the best model based on validation accuracy
         if val_acc > best_val_acc:
-            model_save_path = os.path.join(run_dir, "best_model.pth")
-            torch.save(model.state_dict(), model_save_path)
-            print(f" Model saved to: {model_save_path}\n")
+            # model_save_path = os.path.join(run_dir, "best_model.pth")
+            # torch.save(model.state_dict(), model_save_path)
+            # print(f" Model saved to: {model_save_path}\n")
+
+            # Always save in fixed location
+            final_model_path = os.path.join("outputs", "best_model.pth")
+            torch.save(model.state_dict(), final_model_path)
+            print(f"\n✅ Model saved to: {final_model_path}\n")
             best_val_acc = val_acc
 
     # Save training history as JSON
