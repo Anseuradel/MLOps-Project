@@ -1,7 +1,7 @@
 import os
 import subprocess
 import sys
-
+import src.model.main_loading_by_chunks 
 # Run the main training script
 exit_code = subprocess.call([sys.executable, "main_loading_by_chunks.py"])
 if exit_code != 0:
