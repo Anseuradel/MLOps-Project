@@ -3,7 +3,7 @@ import subprocess
 import sys
 
 # Run the main training script (in src/model)
-exit_code = subprocess.call([sys.executable, "src/model/main_loading_by_chunks.py"])
+exit_code = subprocess.call([sys.executable, "-m", "src.model.main_loading_by_chunks"])
 if exit_code != 0:
     print(" main_loading_by_chunks.py failed, aborting push.")
     sys.exit(exit_code)
