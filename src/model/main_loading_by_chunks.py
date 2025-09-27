@@ -46,7 +46,7 @@ def main():
     data = load_data(config.DATASET_PATH, merge_labels=True)
 
     # Decide chunk size (e.g., 1%)
-    CHUNK_FRAC = 0.01
+    CHUNK_FRAC = 0.001
     chunk_size = int(len(data) * CHUNK_FRAC)
     n_chunks = (len(data) // chunk_size) + int(len(data) % chunk_size != 0)
 
