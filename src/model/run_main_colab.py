@@ -19,7 +19,11 @@ try:
 
     print("\n Adding new training outputs...")
     subprocess.run(["git", "add", "outputs/"], check=True)
-    subprocess.run(["git", "add", "chunks.txt"], check=True)
+    
+    # Add chunks.txt only if it exists
+    if os.path.exists("chunks.txt"):
+        subprocess.run(["git", "add", "chunks.txt"], check=True)
+
 
     print("\n Committing...")
     subprocess.run(["git", "commit", "-m", "Update model & outputs from Colab"], check=True)
