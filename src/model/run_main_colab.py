@@ -22,6 +22,13 @@ try:
     else:
         print("No staged changes to commit before pull.")
 
+    # Force add all changes
+    subprocess.run(["git", "add", "-A"], check=True)
+    
+    # Commit only if there are staged changes
+    subprocess.run(["git", "commit", "-m", "Auto-save before pull"], check=False)
+
+
     print("\n Pulling latest changes...")
     subprocess.run(["git", "pull", "--rebase"], check=True)
 
