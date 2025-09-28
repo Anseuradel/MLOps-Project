@@ -34,7 +34,7 @@ try:
 
     print("\n Adding new training outputs...")
     subprocess.run(["git", "add", "outputs/"], check=True)
-    subprocess.run(["git", "add", "chunks.txt"], check=False)
+    # subprocess.run(["git", "add", "chunks.txt"], check=False)
 
     # Final commit (only if changes exist)
     result = subprocess.run(["git", "diff", "--cached", "--quiet"])
