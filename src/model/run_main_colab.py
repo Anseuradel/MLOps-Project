@@ -13,7 +13,7 @@ if exit_code != 0:
 try:
     print("\n Adding changes first...")
     subprocess.run(["git", "add", "outputs/"], check=True)
-    subprocess.run(["git", "add", "chunks.txt"], check=False)  # may not exist yet
+    # subprocess.run(["git", "add", "chunks.txt"], check=False)  # may not exist yet
 
     # Auto-save commit (only if changes exist)
     result = subprocess.run(["git", "diff", "--cached", "--quiet"])
