@@ -19,6 +19,8 @@ from src.model.evaluate import evaluate
 from src.model.model import SentimentClassifier
 from config import MODEL_TRAINING_OUTPUT_DIR
 
+from huggingface_hub import HfApi, HfFolder, upload_file
+
 
 def train_epoch(
     model: SentimentClassifier,
@@ -122,8 +124,21 @@ def train_model(
             # Always save in fixed location
             final_model_path = os.path.join("outputs", "best_model.pth")
             torch.save(model.state_dict(), final_model_path)
-            print(f"\n✅ Model saved to: {final_model_path}\n")
+            print(f"\n Model saved to: {final_model_path}\n")
             best_val_acc = val_acc
+
+            # --- Push to Hugging Face Hub ---
+            try:
+                repo_id = "Adelanseur/MLOps-Project"   #  hugging face repo
+                upload_file(
+                    path_or_fileobj=final_model_path,
+                    path_in_repo="best_model.pth",      # always overwrite same filename
+                    repo_id=repo_id,
+                    token=HfFolder.get_token()
+                )
+                print(f" Model uploaded to Hugging Face Hub: {repo_id}/best_model.pth")
+            except Exception as e:
+                print(f" Failed to push model to Hugging Face Hub: {e}")
 
     # Save training history as JSON
     history_path = os.path.join(run_dir, "training_history.json")
