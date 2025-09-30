@@ -31,7 +31,7 @@ except subprocess.CalledProcessError as e:
 # --- Push model to Hugging Face Hub ---
 try:
     print("\n ☁️ Uploading model to Hugging Face Hub...")
-    hf_repo = "Anseuradel/my-mlops-model"  # change this to your repo
+    hf_repo = "Adelanseur/MLOps-Project"  # Hugging face repo
     token = HfFolder.get_token()
 
     model_path = "outputs/best_model.pth"
