@@ -12,6 +12,7 @@ from src.model.model import SentimentClassifier
 from src.model.trainer import train_model
 from src.model.evaluate import evaluate_and_plot
 
+from huggingface_hub import hf_hub_download
 # ------------------------------------------
 # Utility functions
 # ------------------------------------------
@@ -78,14 +79,37 @@ def main():
     val_data = dataloader_train_test_val(val_data)
     test_data = dataloader_train_test_val(test_data_raw)
 
-    # Initialize or load model
+    # # Initialize or load model
+    # model = SentimentClassifier(n_classes=config.N_CLASSES).to(config.DEVICE)
+    # best_model_path = os.path.join(
+    #     config.MODEL_TRAINING_OUTPUT_DIR, "best_model.pth"
+    # )
+    # if os.path.exists(best_model_path):
+    #     print(f"🔄 Loading previous model from {best_model_path}")
+    #     model.load_state_dict(torch.load(best_model_path, map_location=config.DEVICE))
+
+    # Initialize model
     model = SentimentClassifier(n_classes=config.N_CLASSES).to(config.DEVICE)
-    best_model_path = os.path.join(
-        config.MODEL_TRAINING_OUTPUT_DIR, "best_model.pth"
-    )
+    best_model_path = os.path.join(config.MODEL_TRAINING_OUTPUT_DIR, "best_model.pth")
+    
     if os.path.exists(best_model_path):
         print(f"🔄 Loading previous model from {best_model_path}")
         model.load_state_dict(torch.load(best_model_path, map_location=config.DEVICE))
+    
+    else:
+        try:
+            print("🌐 No local model found, trying to download from Hugging Face Hub...")
+            hf_model_path = hf_hub_download(
+                repo_id="Adelanseur/MLOps-Project",   # 👈 hugging face repo
+                filename="best_model.pth",
+                local_dir=config.MODEL_TRAINING_OUTPUT_DIR,
+                force_download=False
+            )
+            model.load_state_dict(torch.load(hf_model_path, map_location=config.DEVICE))
+            print("✅ Loaded model from Hugging Face Hub")
+        except Exception as e:
+            print(f"⚠️ Could not load model from Hugging Face Hub: {e}")
+            print("➡️ Starting training from scratch.")
 
     # Train on this chunk
     print("Training model...\n")
