@@ -73,9 +73,6 @@ def train_model(
     lr: float = 2e-5,
     run_folder: str = MODEL_TRAINING_OUTPUT_DIR,
 ):
-    """
-    Runs the training and evaluation loops.
-    """
     model = model.to(device)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = AdamW(model.parameters(), lr=lr, weight_decay=1e-2)
@@ -92,10 +89,8 @@ def train_model(
     os.makedirs(run_dir, exist_ok=True)
 
     best_val_acc = 0
-    history = {"train_loss": [],
-               "train_acc": [],
-               "val_loss": [],
-               "val_acc": []}
+    best_model_path = os.path.join("outputs", "best_model.pth")
+    history = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": []}
 
     for epoch in range(epochs):
         print(f"Epoch {epoch + 1}/{epochs}")
@@ -115,30 +110,24 @@ def train_model(
         history["val_loss"].append(val_loss)
         history["val_acc"].append(val_acc)
 
-        # Save the best model based on validation accuracy
+        # Save locally if it's the best so far
         if val_acc > best_val_acc:
-            # model_save_path = os.path.join(run_dir, "best_model.pth")
-            # torch.save(model.state_dict(), model_save_path)
-            # print(f" Model saved to: {model_save_path}\n")
-
-            # Always save in fixed location
-            final_model_path = os.path.join("outputs", "best_model.pth")
-            torch.save(model.state_dict(), final_model_path)
-            print(f"\n Model saved to: {final_model_path}\n")
+            torch.save(model.state_dict(), best_model_path)
+            print(f"✨ New best model saved locally: {best_model_path}\n")
             best_val_acc = val_acc
 
-            # --- Push to Hugging Face Hub ---
-            try:
-                repo_id = "Adelanseur/MLOps-Project"   #  hugging face repo
-                upload_file(
-                    path_or_fileobj=final_model_path,
-                    path_in_repo="best_model.pth",      # always overwrite same filename
-                    repo_id=repo_id,
-                    token=HfFolder.get_token()
-                )
-                print(f" Model uploaded to Hugging Face Hub: {repo_id}/best_model.pth")
-            except Exception as e:
-                print(f" Failed to push model to Hugging Face Hub: {e}")
+    # --- Push once, at the end of training ---
+    try:
+        repo_id = "Adelanseur/MLOps-Project"
+        upload_file(
+            path_or_fileobj=best_model_path,
+            path_in_repo="best_model.pth",  # overwrite same file
+            repo_id=repo_id,
+            token=HfFolder.get_token()
+        )
+        print(f"✅ Final best model uploaded to Hugging Face Hub: {repo_id}/best_model.pth")
+    except Exception as e:
+        print(f"⚠️ Failed to push model to Hugging Face Hub: {e}")
 
     # Save training history as JSON
     history_path = os.path.join(run_dir, "training_history.json")
@@ -146,10 +135,10 @@ def train_model(
         json.dump(history, f, indent=4)
     print(f"📄 Saved Training History: {history_path}\n")
 
-    # Plot accuracy & loss
     plot_training_results(history, run_dir)
 
     return model
+
 
 def plot_training_results(history: Dict[str, List[float]], run_dir: str):
     """
