@@ -40,7 +40,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # --------------------------------------------------------------------------
 # Real Dataset paths
-DATASET_PATH = "Dataset/text.csv"
+DATASET_PATH = "Dataset/text.txt"
 
 # --------------------------------------------------------------------------
 # Model config
