@@ -6,7 +6,7 @@ from config import SENTIMENT_MAPPING, SENTIMENT_MAPPING_3_LABEL_VERSION, LABEL_M
 def load_file_by_type(file_path):
 
     try:
-        if file_path.endswith(".csv"):
+        if file_path.endswith(".csv") or file_path.endswith(".txt"):
             return pd.read_csv(file_path)  # Load csv file
         elif file_path.endswith(".json"):
             with open(file_path, "r", encoding="utf-8") as f:
@@ -16,7 +16,7 @@ def load_file_by_type(file_path):
             return pd.read_excel(file_path, engine="openpyxl")  # Load Excel file
         else:
             raise ValueError(
-                f"Unsupported file format : {file_path}. Only CSV, JSON, and XLSX are supported."
+                f"Unsupported file format : {file_path}. Only CSV, TXT, JSON, and XLSX are supported."
             )
     except FileNotFoundError:
         raise FileNotFoundError(f"Error: File {file_path} not found.")
