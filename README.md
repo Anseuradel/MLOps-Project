@@ -20,6 +20,7 @@ how to start project :
 
 
     docker build -t adelanseur95/ml-service:latest .
+    
     docker push adelanseur95/ml-service:latest
     
     
