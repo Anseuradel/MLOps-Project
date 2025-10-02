@@ -12,7 +12,7 @@ class SentimentClassifier(nn.Module):
     def __init__(
         self,
         n_classes: int,
-        model_name: str = "bert-base-uncased",
+        model_name: str = config.MODEL_NAME,
         dropout_prob: float = 0.3,
     ):
         """
