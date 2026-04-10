@@ -430,7 +430,7 @@ The prediction is also stored automatically in the SQLite database.
 
 Streamlit Dashboard
 
-- rovides a friendly UI for:
+- Provides a friendly UI for:
 
     - Live predictions
 
